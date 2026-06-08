@@ -17,7 +17,6 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#f8fafc;}
 </head>
 <body class="min-h-screen">
 
-<!-- Header -->
 <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
   <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
     <div class="flex items-center gap-2">
@@ -33,19 +32,18 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#f8fafc;}
 
 <main class="max-w-3xl mx-auto px-4 py-8">
 
-  <!-- Hero -->
   <section class="text-center mb-10">
     <h2 class="text-3xl md:text-4xl font-black mb-3">AI Sees the Future.<br><span class="text-transparent bg-clip-text accent-gradient">And It Roasts You.</span></h2>
     <p class="text-slate-400 max-w-md mx-auto">Pick a World Cup 2026 match. Enter your prediction. Let our AI pundit tell you why you're wrong.</p>
   </section>
 
-  <!-- Match Selector -->
   <section id="match-section" class="card-gradient rounded-2xl p-6 mb-6 glow border border-slate-700">
     <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Select Match</h3>
-    <div class="grid gap-3" id="match-list"></div>
+    <div class="grid gap-3" id="match-list">
+      <div class="text-center py-8 text-slate-500">Loading matches...</div>
+    </div>
   </section>
 
-  <!-- Prediction Input -->
   <section id="prediction-section" class="hidden card-gradient rounded-2xl p-6 mb-6 border border-slate-700">
     <div class="flex items-center justify-between mb-6">
       <div class="flex items-center gap-3">
@@ -76,11 +74,9 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#f8fafc;}
     <button id="predict-btn" class="w-full py-4 rounded-xl font-bold text-lg accent-gradient text-white hover:opacity-90 transition shadow-lg">
       🔮 Let the AI Roast Me
     </button>
-
     <p class="text-center text-xs text-slate-500 mt-3">Powered by Gemini AI · For entertainment only</p>
   </section>
 
-  <!-- AI Result -->
   <section id="result-section" class="hidden mb-6">
     <div class="card-gradient rounded-2xl p-6 border border-slate-700">
       <div class="flex items-start gap-3 mb-4">
@@ -95,7 +91,6 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#f8fafc;}
     </div>
   </section>
 
-  <!-- Share Card Generator -->
   <section id="share-section" class="hidden mb-6">
     <div class="text-center mb-4">
       <h3 class="text-lg font-bold">Your Prophecy Card</h3>
@@ -124,24 +119,39 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#f8fafc;}
 </footer>
 
 <script>
-// ====== MATCH DATA (Group Stage — partial for MVP) ======
-const matches = [
-  {id:1,date:'2026-06-11',group:'A',home:'Mexico',homeFlag:'🇲🇽',away:'South Korea',awayFlag:'🇰🇷'},
-  {id:2,date:'2026-06-12',group:'A',home:'Czechia',homeFlag:'🇨🇿',away:'South Africa',awayFlag:'🇿🇦'},
-  {id:3,date:'2026-06-12',group:'B',home:'Switzerland',homeFlag:'🇨🇭',away:'Canada',awayFlag:'🇨🇦'},
-  {id:4,date:'2026-06-12',group:'B',home:'Bosnia',homeFlag:'🇧🇦',away:'Qatar',awayFlag:'🇶🇦'},
-  {id:5,date:'2026-06-13',group:'C',home:'Brazil',homeFlag:'🇧🇷',away:'Morocco',awayFlag:'🇲🇦'},
-  {id:6,date:'2026-06-13',group:'C',home:'Tunisia',homeFlag:'🇹🇳',away:'Paraguay',awayFlag:'🇵🇾'},
-  {id:7,date:'2026-06-14',group:'D',home:'USA',homeFlag:'🇺🇸',away:'Turkey',awayFlag:'🇹🇷'},
-  {id:8,date:'2026-06-14',group:'D',home:'Australia',homeFlag:'🇦🇺',away:'Paraguay',awayFlag:'🇵🇾'},
-  {id:9,date:'2026-06-15',group:'E',home:'Germany',homeFlag:'🇩🇪',away:'Ecuador',awayFlag:'🇪🇨'},
-  {id:10,date:'2026-06-15',group:'E',home:'Ivory Coast',homeFlag:'🇨🇮',away:'Curaçao',awayFlag:'🇨🇼'},
-  {id:11,date:'2026-06-16',group:'F',home:'Netherlands',homeFlag:'🇳🇱',away:'Japan',awayFlag:'🇯🇵'},
-  {id:12,date:'2026-06-16',group:'F',home:'Sweden',homeFlag:'🇸🇪',away:'Tunisia',awayFlag:'🇹🇳'},
-];
+// ====== CONFIG ======
+const GEMINI_API_KEY = 'AIzaSyAuqlhaJfTOEY-cnEJ5QLuaS0aon3QaL_E';
+const GEMINI_MODEL = 'gemini-3.5-flash';
 
+// ====== FLAG HELPER ======
+function codeToFlag(code) {
+  if (code === 'CW') return '\u2693';
+  if (code === 'GB') return '\ud83c\uddec\ud83c\udde7';
+  const base = 0x1F1E6;
+  return String.fromCodePoint(base + code.charCodeAt(0) - 65, base + code.charCodeAt(1) - 65);
+}
+
+// ====== LOAD MATCHES ======
+let matches = [];
 let selectedMatch = null;
 let aiResult = null;
+
+async function loadMatches() {
+  try {
+    const res = await fetch('matches.json');
+    const data = await res.json();
+    matches = data.map(m => ({
+      ...m,
+      homeFlag: codeToFlag(m.homeCode),
+      awayFlag: codeToFlag(m.awayCode)
+    }));
+    renderMatches();
+  } catch(e) {
+    document.getElementById('match-list').innerHTML =
+      '<div class="text-center py-8 text-red-400">Failed to load matches. Please refresh.</div>';
+    console.error(e);
+  }
+}
 
 // ====== RENDER MATCH LIST ======
 function renderMatches() {
@@ -175,9 +185,6 @@ function selectMatch(id) {
 }
 
 // ====== AI PREDICTION ======
-const GEMINI_API_KEY = 'AIzaSyAuqlhaJfTOEY-cnEJ5QLuaS0aon3QaL_E';
-const GEMINI_MODEL = 'gemini-3.5-flash';
-
 async function callGemini(prompt) {
   const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`, {
     method: 'POST',
@@ -237,18 +244,15 @@ function renderShareCard() {
   const ctx = c.getContext('2d');
   const w = c.width, h = c.height;
 
-  // Background
   const grd = ctx.createLinearGradient(0,0,0,h);
   grd.addColorStop(0,'#1e293b');
   grd.addColorStop(1,'#0f172a');
   ctx.fillStyle = grd;
   ctx.fillRect(0,0,w,h);
 
-  // Accent bar top
   ctx.fillStyle = '#f59e0b';
   ctx.fillRect(60,120,960,12);
 
-  // Header
   ctx.fillStyle = '#f8fafc';
   ctx.font = 'bold 52px Inter, sans-serif';
   ctx.fillText('MatchProphet', 60, 240);
@@ -256,7 +260,6 @@ function renderShareCard() {
   ctx.font = '36px Inter, sans-serif';
   ctx.fillText('World Cup 2026 Prediction', 60, 300);
 
-  // Match display
   ctx.font = 'bold 80px Inter, sans-serif';
   ctx.fillStyle = '#f8fafc';
   ctx.textAlign = 'center';
@@ -268,7 +271,6 @@ function renderShareCard() {
   ctx.font = 'bold 80px Inter, sans-serif';
   ctx.fillText(`${selectedMatch.away}  ${selectedMatch.awayFlag}`, w/2, 880);
 
-  // Divider
   ctx.strokeStyle = '#334155';
   ctx.lineWidth = 4;
   ctx.beginPath();
@@ -276,7 +278,6 @@ function renderShareCard() {
   ctx.lineTo(w-120, 960);
   ctx.stroke();
 
-  // AI Quote
   ctx.fillStyle = '#f59e0b';
   ctx.font = 'italic bold 56px Inter, sans-serif';
   const words = aiResult.quote.split(' ');
@@ -293,7 +294,6 @@ function renderShareCard() {
   }
   ctx.fillText(line.trim(), w/2, y);
 
-  // Footer
   ctx.fillStyle = '#64748b';
   ctx.font = '36px Inter, sans-serif';
   ctx.fillText('matchprophet.fun', w/2, 1750);
@@ -314,7 +314,8 @@ document.getElementById('copy-text-btn').addEventListener('click', () => {
   navigator.clipboard.writeText(text).then(() => alert('Copied to clipboard!'));
 });
 
-renderMatches();
+// ====== INIT ======
+loadMatches();
 </script>
 
 </body>

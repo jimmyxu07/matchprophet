@@ -1,0 +1,650 @@
+[
+  {
+    "id": 1,
+    "date": "2026-06-11",
+    "group": "A",
+    "home": "Mexico",
+    "homeCode": "MX",
+    "away": "South Africa",
+    "awayCode": "ZA"
+  },
+  {
+    "id": 2,
+    "date": "2026-06-11",
+    "group": "A",
+    "home": "South Korea",
+    "homeCode": "KR",
+    "away": "Czechia",
+    "awayCode": "CZ"
+  },
+  {
+    "id": 3,
+    "date": "2026-06-17",
+    "group": "A",
+    "home": "Mexico",
+    "homeCode": "MX",
+    "away": "South Korea",
+    "awayCode": "KR"
+  },
+  {
+    "id": 4,
+    "date": "2026-06-17",
+    "group": "A",
+    "home": "South Africa",
+    "homeCode": "ZA",
+    "away": "Czechia",
+    "awayCode": "CZ"
+  },
+  {
+    "id": 5,
+    "date": "2026-06-24",
+    "group": "A",
+    "home": "Mexico",
+    "homeCode": "MX",
+    "away": "Czechia",
+    "awayCode": "CZ"
+  },
+  {
+    "id": 6,
+    "date": "2026-06-24",
+    "group": "A",
+    "home": "South Africa",
+    "homeCode": "ZA",
+    "away": "South Korea",
+    "awayCode": "KR"
+  },
+  {
+    "id": 7,
+    "date": "2026-06-12",
+    "group": "B",
+    "home": "Canada",
+    "homeCode": "CA",
+    "away": "Bosnia and Herzegovina",
+    "awayCode": "BA"
+  },
+  {
+    "id": 8,
+    "date": "2026-06-12",
+    "group": "B",
+    "home": "Qatar",
+    "homeCode": "QA",
+    "away": "Switzerland",
+    "awayCode": "CH"
+  },
+  {
+    "id": 9,
+    "date": "2026-06-18",
+    "group": "B",
+    "home": "Canada",
+    "homeCode": "CA",
+    "away": "Qatar",
+    "awayCode": "QA"
+  },
+  {
+    "id": 10,
+    "date": "2026-06-18",
+    "group": "B",
+    "home": "Bosnia and Herzegovina",
+    "homeCode": "BA",
+    "away": "Switzerland",
+    "awayCode": "CH"
+  },
+  {
+    "id": 11,
+    "date": "2026-06-24",
+    "group": "B",
+    "home": "Canada",
+    "homeCode": "CA",
+    "away": "Switzerland",
+    "awayCode": "CH"
+  },
+  {
+    "id": 12,
+    "date": "2026-06-24",
+    "group": "B",
+    "home": "Bosnia and Herzegovina",
+    "homeCode": "BA",
+    "away": "Qatar",
+    "awayCode": "QA"
+  },
+  {
+    "id": 13,
+    "date": "2026-06-13",
+    "group": "C",
+    "home": "Brazil",
+    "homeCode": "BR",
+    "away": "Morocco",
+    "awayCode": "MA"
+  },
+  {
+    "id": 14,
+    "date": "2026-06-13",
+    "group": "C",
+    "home": "Haiti",
+    "homeCode": "HT",
+    "away": "Scotland",
+    "awayCode": "GB"
+  },
+  {
+    "id": 15,
+    "date": "2026-06-19",
+    "group": "C",
+    "home": "Brazil",
+    "homeCode": "BR",
+    "away": "Haiti",
+    "awayCode": "HT"
+  },
+  {
+    "id": 16,
+    "date": "2026-06-19",
+    "group": "C",
+    "home": "Morocco",
+    "homeCode": "MA",
+    "away": "Scotland",
+    "awayCode": "GB"
+  },
+  {
+    "id": 17,
+    "date": "2026-06-25",
+    "group": "C",
+    "home": "Brazil",
+    "homeCode": "BR",
+    "away": "Scotland",
+    "awayCode": "GB"
+  },
+  {
+    "id": 18,
+    "date": "2026-06-25",
+    "group": "C",
+    "home": "Morocco",
+    "homeCode": "MA",
+    "away": "Haiti",
+    "awayCode": "HT"
+  },
+  {
+    "id": 19,
+    "date": "2026-06-13",
+    "group": "D",
+    "home": "United States",
+    "homeCode": "US",
+    "away": "Paraguay",
+    "awayCode": "PY"
+  },
+  {
+    "id": 20,
+    "date": "2026-06-13",
+    "group": "D",
+    "home": "Australia",
+    "homeCode": "AU",
+    "away": "Turkey",
+    "awayCode": "TR"
+  },
+  {
+    "id": 21,
+    "date": "2026-06-19",
+    "group": "D",
+    "home": "United States",
+    "homeCode": "US",
+    "away": "Australia",
+    "awayCode": "AU"
+  },
+  {
+    "id": 22,
+    "date": "2026-06-19",
+    "group": "D",
+    "home": "Paraguay",
+    "homeCode": "PY",
+    "away": "Turkey",
+    "awayCode": "TR"
+  },
+  {
+    "id": 23,
+    "date": "2026-06-25",
+    "group": "D",
+    "home": "United States",
+    "homeCode": "US",
+    "away": "Turkey",
+    "awayCode": "TR"
+  },
+  {
+    "id": 24,
+    "date": "2026-06-25",
+    "group": "D",
+    "home": "Paraguay",
+    "homeCode": "PY",
+    "away": "Australia",
+    "awayCode": "AU"
+  },
+  {
+    "id": 25,
+    "date": "2026-06-14",
+    "group": "E",
+    "home": "Germany",
+    "homeCode": "DE",
+    "away": "Curacao",
+    "awayCode": "CW"
+  },
+  {
+    "id": 26,
+    "date": "2026-06-14",
+    "group": "E",
+    "home": "Ivory Coast",
+    "homeCode": "CI",
+    "away": "Ecuador",
+    "awayCode": "EC"
+  },
+  {
+    "id": 27,
+    "date": "2026-06-20",
+    "group": "E",
+    "home": "Germany",
+    "homeCode": "DE",
+    "away": "Ivory Coast",
+    "awayCode": "CI"
+  },
+  {
+    "id": 28,
+    "date": "2026-06-20",
+    "group": "E",
+    "home": "Curacao",
+    "homeCode": "CW",
+    "away": "Ecuador",
+    "awayCode": "EC"
+  },
+  {
+    "id": 29,
+    "date": "2026-06-25",
+    "group": "E",
+    "home": "Germany",
+    "homeCode": "DE",
+    "away": "Ecuador",
+    "awayCode": "EC"
+  },
+  {
+    "id": 30,
+    "date": "2026-06-25",
+    "group": "E",
+    "home": "Curacao",
+    "homeCode": "CW",
+    "away": "Ivory Coast",
+    "awayCode": "CI"
+  },
+  {
+    "id": 31,
+    "date": "2026-06-14",
+    "group": "F",
+    "home": "Netherlands",
+    "homeCode": "NL",
+    "away": "Japan",
+    "awayCode": "JP"
+  },
+  {
+    "id": 32,
+    "date": "2026-06-14",
+    "group": "F",
+    "home": "Sweden",
+    "homeCode": "SE",
+    "away": "Tunisia",
+    "awayCode": "TN"
+  },
+  {
+    "id": 33,
+    "date": "2026-06-20",
+    "group": "F",
+    "home": "Netherlands",
+    "homeCode": "NL",
+    "away": "Sweden",
+    "awayCode": "SE"
+  },
+  {
+    "id": 34,
+    "date": "2026-06-20",
+    "group": "F",
+    "home": "Japan",
+    "homeCode": "JP",
+    "away": "Tunisia",
+    "awayCode": "TN"
+  },
+  {
+    "id": 35,
+    "date": "2026-06-25",
+    "group": "F",
+    "home": "Netherlands",
+    "homeCode": "NL",
+    "away": "Tunisia",
+    "awayCode": "TN"
+  },
+  {
+    "id": 36,
+    "date": "2026-06-25",
+    "group": "F",
+    "home": "Japan",
+    "homeCode": "JP",
+    "away": "Sweden",
+    "awayCode": "SE"
+  },
+  {
+    "id": 37,
+    "date": "2026-06-15",
+    "group": "G",
+    "home": "Belgium",
+    "homeCode": "BE",
+    "away": "Egypt",
+    "awayCode": "EG"
+  },
+  {
+    "id": 38,
+    "date": "2026-06-15",
+    "group": "G",
+    "home": "Iran",
+    "homeCode": "IR",
+    "away": "New Zealand",
+    "awayCode": "NZ"
+  },
+  {
+    "id": 39,
+    "date": "2026-06-21",
+    "group": "G",
+    "home": "Belgium",
+    "homeCode": "BE",
+    "away": "Iran",
+    "awayCode": "IR"
+  },
+  {
+    "id": 40,
+    "date": "2026-06-21",
+    "group": "G",
+    "home": "Egypt",
+    "homeCode": "EG",
+    "away": "New Zealand",
+    "awayCode": "NZ"
+  },
+  {
+    "id": 41,
+    "date": "2026-06-26",
+    "group": "G",
+    "home": "Belgium",
+    "homeCode": "BE",
+    "away": "New Zealand",
+    "awayCode": "NZ"
+  },
+  {
+    "id": 42,
+    "date": "2026-06-26",
+    "group": "G",
+    "home": "Egypt",
+    "homeCode": "EG",
+    "away": "Iran",
+    "awayCode": "IR"
+  },
+  {
+    "id": 43,
+    "date": "2026-06-15",
+    "group": "H",
+    "home": "Spain",
+    "homeCode": "ES",
+    "away": "Cape Verde",
+    "awayCode": "CV"
+  },
+  {
+    "id": 44,
+    "date": "2026-06-15",
+    "group": "H",
+    "home": "Saudi Arabia",
+    "homeCode": "SA",
+    "away": "Uruguay",
+    "awayCode": "UY"
+  },
+  {
+    "id": 45,
+    "date": "2026-06-21",
+    "group": "H",
+    "home": "Spain",
+    "homeCode": "ES",
+    "away": "Saudi Arabia",
+    "awayCode": "SA"
+  },
+  {
+    "id": 46,
+    "date": "2026-06-21",
+    "group": "H",
+    "home": "Cape Verde",
+    "homeCode": "CV",
+    "away": "Uruguay",
+    "awayCode": "UY"
+  },
+  {
+    "id": 47,
+    "date": "2026-06-26",
+    "group": "H",
+    "home": "Spain",
+    "homeCode": "ES",
+    "away": "Uruguay",
+    "awayCode": "UY"
+  },
+  {
+    "id": 48,
+    "date": "2026-06-26",
+    "group": "H",
+    "home": "Cape Verde",
+    "homeCode": "CV",
+    "away": "Saudi Arabia",
+    "awayCode": "SA"
+  },
+  {
+    "id": 49,
+    "date": "2026-06-16",
+    "group": "I",
+    "home": "France",
+    "homeCode": "FR",
+    "away": "Senegal",
+    "awayCode": "SN"
+  },
+  {
+    "id": 50,
+    "date": "2026-06-16",
+    "group": "I",
+    "home": "Iraq",
+    "homeCode": "IQ",
+    "away": "Norway",
+    "awayCode": "NO"
+  },
+  {
+    "id": 51,
+    "date": "2026-06-22",
+    "group": "I",
+    "home": "France",
+    "homeCode": "FR",
+    "away": "Iraq",
+    "awayCode": "IQ"
+  },
+  {
+    "id": 52,
+    "date": "2026-06-22",
+    "group": "I",
+    "home": "Senegal",
+    "homeCode": "SN",
+    "away": "Norway",
+    "awayCode": "NO"
+  },
+  {
+    "id": 53,
+    "date": "2026-06-26",
+    "group": "I",
+    "home": "France",
+    "homeCode": "FR",
+    "away": "Norway",
+    "awayCode": "NO"
+  },
+  {
+    "id": 54,
+    "date": "2026-06-26",
+    "group": "I",
+    "home": "Senegal",
+    "homeCode": "SN",
+    "away": "Iraq",
+    "awayCode": "IQ"
+  },
+  {
+    "id": 55,
+    "date": "2026-06-16",
+    "group": "J",
+    "home": "Argentina",
+    "homeCode": "AR",
+    "away": "Algeria",
+    "awayCode": "DZ"
+  },
+  {
+    "id": 56,
+    "date": "2026-06-16",
+    "group": "J",
+    "home": "Austria",
+    "homeCode": "AT",
+    "away": "Jordan",
+    "awayCode": "JO"
+  },
+  {
+    "id": 57,
+    "date": "2026-06-22",
+    "group": "J",
+    "home": "Argentina",
+    "homeCode": "AR",
+    "away": "Austria",
+    "awayCode": "AT"
+  },
+  {
+    "id": 58,
+    "date": "2026-06-22",
+    "group": "J",
+    "home": "Algeria",
+    "homeCode": "DZ",
+    "away": "Jordan",
+    "awayCode": "JO"
+  },
+  {
+    "id": 59,
+    "date": "2026-06-26",
+    "group": "J",
+    "home": "Argentina",
+    "homeCode": "AR",
+    "away": "Jordan",
+    "awayCode": "JO"
+  },
+  {
+    "id": 60,
+    "date": "2026-06-26",
+    "group": "J",
+    "home": "Algeria",
+    "homeCode": "DZ",
+    "away": "Austria",
+    "awayCode": "AT"
+  },
+  {
+    "id": 61,
+    "date": "2026-06-17",
+    "group": "K",
+    "home": "Portugal",
+    "homeCode": "PT",
+    "away": "DR Congo",
+    "awayCode": "CD"
+  },
+  {
+    "id": 62,
+    "date": "2026-06-17",
+    "group": "K",
+    "home": "Uzbekistan",
+    "homeCode": "UZ",
+    "away": "Colombia",
+    "awayCode": "CO"
+  },
+  {
+    "id": 63,
+    "date": "2026-06-23",
+    "group": "K",
+    "home": "Portugal",
+    "homeCode": "PT",
+    "away": "Uzbekistan",
+    "awayCode": "UZ"
+  },
+  {
+    "id": 64,
+    "date": "2026-06-23",
+    "group": "K",
+    "home": "DR Congo",
+    "homeCode": "CD",
+    "away": "Colombia",
+    "awayCode": "CO"
+  },
+  {
+    "id": 65,
+    "date": "2026-06-26",
+    "group": "K",
+    "home": "Portugal",
+    "homeCode": "PT",
+    "away": "Colombia",
+    "awayCode": "CO"
+  },
+  {
+    "id": 66,
+    "date": "2026-06-26",
+    "group": "K",
+    "home": "DR Congo",
+    "homeCode": "CD",
+    "away": "Uzbekistan",
+    "awayCode": "UZ"
+  },
+  {
+    "id": 67,
+    "date": "2026-06-17",
+    "group": "L",
+    "home": "England",
+    "homeCode": "GB",
+    "away": "Croatia",
+    "awayCode": "HR"
+  },
+  {
+    "id": 68,
+    "date": "2026-06-17",
+    "group": "L",
+    "home": "Ghana",
+    "homeCode": "GH",
+    "away": "Panama",
+    "awayCode": "PA"
+  },
+  {
+    "id": 69,
+    "date": "2026-06-23",
+    "group": "L",
+    "home": "England",
+    "homeCode": "GB",
+    "away": "Ghana",
+    "awayCode": "GH"
+  },
+  {
+    "id": 70,
+    "date": "2026-06-23",
+    "group": "L",
+    "home": "Croatia",
+    "homeCode": "HR",
+    "away": "Panama",
+    "awayCode": "PA"
+  },
+  {
+    "id": 71,
+    "date": "2026-06-26",
+    "group": "L",
+    "home": "England",
+    "homeCode": "GB",
+    "away": "Panama",
+    "awayCode": "PA"
+  },
+  {
+    "id": 72,
+    "date": "2026-06-26",
+    "group": "L",
+    "home": "Croatia",
+    "homeCode": "HR",
+    "away": "Ghana",
+    "awayCode": "GH"
+  }
+]
