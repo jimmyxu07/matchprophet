@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MatchProphet — AI World Cup 2026 Predictions</title>
+<meta name="description" content="Let our AI sports pundit roast your World Cup 2026 predictions. Generate shareable prophecy cards.">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
+body{font-family:'Inter',sans-serif;background:#0f172a;color:#f8fafc;}
+.card-gradient{background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%);}
+.accent-gradient{background:linear-gradient(135deg,#f59e0b 0%,#ef4444 100%);}
+.glow{box-shadow:0 0 40px rgba(245,158,11,0.15);}
+.flag{font-size:2.5rem;line-height:1;}
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- Header -->
+<header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+  <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <span class="text-2xl">🔮</span>
+      <h1 class="text-xl font-black tracking-tight">MatchProphet</h1>
+    </div>
+    <nav class="flex gap-4 text-sm text-slate-400">
+      <a href="index.html" class="text-amber-400 font-semibold">Predict</a>
+      <a href="about.html" class="hover:text-slate-200">About</a>
+    </nav>
+  </div>
+</header>
+
+<main class="max-w-3xl mx-auto px-4 py-8">
+
+  <!-- Hero -->
+  <section class="text-center mb-10">
+    <h2 class="text-3xl md:text-4xl font-black mb-3">AI Sees the Future.<br><span class="text-transparent bg-clip-text accent-gradient">And It Roasts You.</span></h2>
+    <p class="text-slate-400 max-w-md mx-auto">Pick a World Cup 2026 match. Enter your prediction. Let our AI pundit tell you why you're wrong.</p>
+  </section>
+
+  <!-- Match Selector -->
+  <section id="match-section" class="card-gradient rounded-2xl p-6 mb-6 glow border border-slate-700">
+    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Select Match</h3>
+    <div class="grid gap-3" id="match-list"></div>
+  </section>
+
+  <!-- Prediction Input -->
+  <section id="prediction-section" class="hidden card-gradient rounded-2xl p-6 mb-6 border border-slate-700">
+    <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center gap-3">
+        <span id="home-flag" class="flag"></span>
+        <div>
+          <div id="home-name" class="font-bold text-lg"></div>
+          <div class="text-xs text-slate-500">Home</div>
+        </div>
+      </div>
+      <div class="text-slate-500 font-bold text-xl">VS</div>
+      <div class="flex items-center gap-3 text-right">
+        <div>
+          <div id="away-name" class="font-bold text-lg"></div>
+          <div class="text-xs text-slate-500">Away</div>
+        </div>
+        <span id="away-flag" class="flag"></span>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-center gap-4 mb-6">
+      <input id="home-score" type="number" min="0" max="20" value="0"
+        class="w-20 h-20 text-center text-4xl font-black bg-slate-800 border-2 border-slate-600 rounded-xl focus:border-amber-500 focus:outline-none text-white">
+      <span class="text-3xl font-bold text-slate-500">:</span>
+      <input id="away-score" type="number" min="0" max="20" value="0"
+        class="w-20 h-20 text-center text-4xl font-black bg-slate-800 border-2 border-slate-600 rounded-xl focus:border-amber-500 focus:outline-none text-white">
+    </div>
+
+    <button id="predict-btn" class="w-full py-4 rounded-xl font-bold text-lg accent-gradient text-white hover:opacity-90 transition shadow-lg">
+      🔮 Let the AI Roast Me
+    </button>
+
+    <p class="text-center text-xs text-slate-500 mt-3">Powered by Gemini AI · For entertainment only</p>
+  </section>
+
+  <!-- AI Result -->
+  <section id="result-section" class="hidden mb-6">
+    <div class="card-gradient rounded-2xl p-6 border border-slate-700">
+      <div class="flex items-start gap-3 mb-4">
+        <div class="w-10 h-10 rounded-full accent-gradient flex items-center justify-center text-lg flex-shrink-0">🤖</div>
+        <div>
+          <div class="font-bold text-amber-400">Prophet AI</div>
+          <div class="text-xs text-slate-500">Certified Ball Knowledge Haver</div>
+        </div>
+      </div>
+      <div id="ai-text" class="text-lg leading-relaxed text-slate-200 mb-4"></div>
+      <div id="ai-quote" class="bg-slate-800/50 border-l-4 border-amber-500 pl-4 py-2 italic text-slate-300"></div>
+    </div>
+  </section>
+
+  <!-- Share Card Generator -->
+  <section id="share-section" class="hidden mb-6">
+    <div class="text-center mb-4">
+      <h3 class="text-lg font-bold">Your Prophecy Card</h3>
+      <p class="text-sm text-slate-400">Download and share to summon the football gods</p>
+    </div>
+    <canvas id="share-canvas" width="1080" height="1920" class="w-full max-w-sm mx-auto rounded-xl shadow-2xl border border-slate-700"></canvas>
+    <div class="flex gap-3 justify-center mt-4">
+      <button id="download-btn" class="px-6 py-3 rounded-xl font-bold bg-slate-700 hover:bg-slate-600 transition text-white">
+        ⬇️ Download
+      </button>
+      <button id="copy-text-btn" class="px-6 py-3 rounded-xl font-bold bg-slate-700 hover:bg-slate-600 transition text-white">
+        📋 Copy Text
+      </button>
+    </div>
+  </section>
+
+</main>
+
+<footer class="border-t border-slate-800 mt-12 py-8 text-center text-sm text-slate-500">
+  <p>MatchProphet — AI-powered World Cup 2026 entertainment · Not affiliated with FIFA</p>
+  <p class="mt-2">For entertainment only. No real betting, no real money.</p>
+  <div class="mt-3 flex justify-center gap-4">
+    <a href="privacy.html" class="hover:text-slate-300">Privacy</a>
+    <a href="about.html" class="hover:text-slate-300">About</a>
+  </div>
+</footer>
+
+<script>
+// ====== MATCH DATA (Group Stage — partial for MVP) ======
+const matches = [
+  {id:1,date:'2026-06-11',group:'A',home:'Mexico',homeFlag:'🇲🇽',away:'South Korea',awayFlag:'🇰🇷'},
+  {id:2,date:'2026-06-12',group:'A',home:'Czechia',homeFlag:'🇨🇿',away:'South Africa',awayFlag:'🇿🇦'},
+  {id:3,date:'2026-06-12',group:'B',home:'Switzerland',homeFlag:'🇨🇭',away:'Canada',awayFlag:'🇨🇦'},
+  {id:4,date:'2026-06-12',group:'B',home:'Bosnia',homeFlag:'🇧🇦',away:'Qatar',awayFlag:'🇶🇦'},
+  {id:5,date:'2026-06-13',group:'C',home:'Brazil',homeFlag:'🇧🇷',away:'Morocco',awayFlag:'🇲🇦'},
+  {id:6,date:'2026-06-13',group:'C',home:'Tunisia',homeFlag:'🇹🇳',away:'Paraguay',awayFlag:'🇵🇾'},
+  {id:7,date:'2026-06-14',group:'D',home:'USA',homeFlag:'🇺🇸',away:'Turkey',awayFlag:'🇹🇷'},
+  {id:8,date:'2026-06-14',group:'D',home:'Australia',homeFlag:'🇦🇺',away:'Paraguay',awayFlag:'🇵🇾'},
+  {id:9,date:'2026-06-15',group:'E',home:'Germany',homeFlag:'🇩🇪',away:'Ecuador',awayFlag:'🇪🇨'},
+  {id:10,date:'2026-06-15',group:'E',home:'Ivory Coast',homeFlag:'🇨🇮',away:'Curaçao',awayFlag:'🇨🇼'},
+  {id:11,date:'2026-06-16',group:'F',home:'Netherlands',homeFlag:'🇳🇱',away:'Japan',awayFlag:'🇯🇵'},
+  {id:12,date:'2026-06-16',group:'F',home:'Sweden',homeFlag:'🇸🇪',away:'Tunisia',awayFlag:'🇹🇳'},
+];
+
+let selectedMatch = null;
+let aiResult = null;
+
+// ====== RENDER MATCH LIST ======
+function renderMatches() {
+  const container = document.getElementById('match-list');
+  container.innerHTML = matches.map(m => `
+    <button onclick="selectMatch(${m.id})" class="w-full text-left p-4 rounded-xl bg-slate-800/50 hover:bg-slate-700 border border-slate-700 hover:border-amber-500/50 transition flex items-center justify-between group">
+      <div class="flex items-center gap-3">
+        <span class="text-xs font-bold text-slate-500 bg-slate-900 px-2 py-1 rounded">${m.group}</span>
+        <span class="text-sm text-slate-400">${m.date}</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="flex items-center gap-1"><span class="flag text-xl">${m.homeFlag}</span><span class="font-semibold hidden sm:inline">${m.home}</span></span>
+        <span class="text-slate-500 font-bold">vs</span>
+        <span class="flex items-center gap-1"><span class="font-semibold hidden sm:inline">${m.away}</span><span class="flag text-xl">${m.awayFlag}</span></span>
+      </div>
+    </button>
+  `).join('');
+}
+
+function selectMatch(id) {
+  selectedMatch = matches.find(m => m.id === id);
+  document.getElementById('home-flag').textContent = selectedMatch.homeFlag;
+  document.getElementById('home-name').textContent = selectedMatch.home;
+  document.getElementById('away-flag').textContent = selectedMatch.awayFlag;
+  document.getElementById('away-name').textContent = selectedMatch.away;
+  document.getElementById('match-section').classList.add('hidden');
+  document.getElementById('prediction-section').classList.remove('hidden');
+  document.getElementById('result-section').classList.add('hidden');
+  document.getElementById('share-section').classList.add('hidden');
+  window.scrollTo({top: document.getElementById('prediction-section').offsetTop - 80, behavior:'smooth'});
+}
+
+// ====== AI PREDICTION ======
+const GEMINI_API_KEY = 'AIzaSyAuqlhaJfTOEY-cnEJ5QLuaS0aon3QaL_E';
+const GEMINI_MODEL = 'gemini-3.5-flash';
+
+async function callGemini(prompt) {
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      contents: [{parts:[{text: prompt}]}],
+      generationConfig: {temperature:0.9, maxOutputTokens:512}
+    })
+  });
+  if (!res.ok) throw new Error('AI API error: '+res.status);
+  const data = await res.json();
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || 'The AI prophet is napping. Try again.';
+}
+
+function buildPrompt(match, homeScore, awayScore) {
+  return `You are "Prophet AI", a brutally honest, funny, and slightly unhinged football pundit who predicts World Cup 2026 matches. Your personality: think combining Gary Neville's rage, Roy Keane's disdain, and a Twitter shitposter. You speak in short punchy paragraphs.
+
+The user predicted: ${match.home} ${homeScore} - ${awayScore} ${match.away}
+
+Respond in EXACTLY this format (keep the labels):
+VERDICT: [2-3 sentences roasting the user's prediction and giving your own prediction with reasoning. Be funny, use football memes, reference real players if relevant. No betting terms.]
+
+QUOTE: [One iconic punchline under 120 characters that the user can tweet. Make it savage but family-friendly.]
+
+Keep it entertaining. This is purely for fun, not gambling.`;
+}
+
+document.getElementById('predict-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('predict-btn');
+  const homeScore = document.getElementById('home-score').value;
+  const awayScore = document.getElementById('away-score').value;
+  btn.disabled = true;
+  btn.textContent = '🧠 The Prophet is thinking...';
+  try {
+    const raw = await callGemini(buildPrompt(selectedMatch, homeScore, awayScore));
+    const verdict = raw.match(/VERDICT:\s*([\s\S]*?)(?=QUOTE:|$)/)?.[1]?.trim() || raw;
+    const quote = raw.match(/QUOTE:\s*(.*)/)?.[1]?.trim() || 'Bold prediction. Probably wrong.';
+    aiResult = {verdict, quote, homeScore, awayScore};
+    document.getElementById('ai-text').textContent = verdict;
+    document.getElementById('ai-quote').textContent = '"' + quote + '"';
+    document.getElementById('result-section').classList.remove('hidden');
+    document.getElementById('share-section').classList.remove('hidden');
+    renderShareCard();
+    window.scrollTo({top: document.getElementById('result-section').offsetTop - 80, behavior:'smooth'});
+  } catch(e) {
+    alert('AI is having a moment. Try again in a few seconds.');
+    console.error(e);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🔮 Let the AI Roast Me';
+  }
+});
+
+// ====== SHARE CARD (Canvas 9:16) ======
+function renderShareCard() {
+  const c = document.getElementById('share-canvas');
+  const ctx = c.getContext('2d');
+  const w = c.width, h = c.height;
+
+  // Background
+  const grd = ctx.createLinearGradient(0,0,0,h);
+  grd.addColorStop(0,'#1e293b');
+  grd.addColorStop(1,'#0f172a');
+  ctx.fillStyle = grd;
+  ctx.fillRect(0,0,w,h);
+
+  // Accent bar top
+  ctx.fillStyle = '#f59e0b';
+  ctx.fillRect(60,120,960,12);
+
+  // Header
+  ctx.fillStyle = '#f8fafc';
+  ctx.font = 'bold 52px Inter, sans-serif';
+  ctx.fillText('MatchProphet', 60, 240);
+  ctx.fillStyle = '#94a3b8';
+  ctx.font = '36px Inter, sans-serif';
+  ctx.fillText('World Cup 2026 Prediction', 60, 300);
+
+  // Match display
+  ctx.font = 'bold 80px Inter, sans-serif';
+  ctx.fillStyle = '#f8fafc';
+  ctx.textAlign = 'center';
+  ctx.fillText(`${selectedMatch.homeFlag}  ${selectedMatch.home}`, w/2, 520);
+  ctx.fillStyle = '#f59e0b';
+  ctx.font = 'bold 120px Inter, sans-serif';
+  ctx.fillText(`${aiResult.homeScore}  -  ${aiResult.awayScore}`, w/2, 700);
+  ctx.fillStyle = '#f8fafc';
+  ctx.font = 'bold 80px Inter, sans-serif';
+  ctx.fillText(`${selectedMatch.away}  ${selectedMatch.awayFlag}`, w/2, 880);
+
+  // Divider
+  ctx.strokeStyle = '#334155';
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.moveTo(120, 960);
+  ctx.lineTo(w-120, 960);
+  ctx.stroke();
+
+  // AI Quote
+  ctx.fillStyle = '#f59e0b';
+  ctx.font = 'italic bold 56px Inter, sans-serif';
+  const words = aiResult.quote.split(' ');
+  let line = '', y = 1100;
+  for (let n=0; n<words.length; n++) {
+    const test = line + words[n] + ' ';
+    if (ctx.measureText(test).width > 840 && n > 0) {
+      ctx.fillText(line.trim(), w/2, y);
+      line = words[n] + ' ';
+      y += 80;
+    } else {
+      line = test;
+    }
+  }
+  ctx.fillText(line.trim(), w/2, y);
+
+  // Footer
+  ctx.fillStyle = '#64748b';
+  ctx.font = '36px Inter, sans-serif';
+  ctx.fillText('matchprophet.fun', w/2, 1750);
+  ctx.fillText('🔮 AI-powered football prophecies', w/2, 1810);
+
+  ctx.textAlign = 'left';
+}
+
+document.getElementById('download-btn').addEventListener('click', () => {
+  const link = document.createElement('a');
+  link.download = `matchprophet-${selectedMatch.home}-vs-${selectedMatch.away}.png`;
+  link.href = document.getElementById('share-canvas').toDataURL('image/png');
+  link.click();
+});
+
+document.getElementById('copy-text-btn').addEventListener('click', () => {
+  const text = `🔮 My World Cup 2026 Prediction:\n${selectedMatch.home} ${aiResult.homeScore} - ${aiResult.awayScore} ${selectedMatch.away}\n\n💬 "${aiResult.quote}"\n\nGenerated by MatchProphet`;
+  navigator.clipboard.writeText(text).then(() => alert('Copied to clipboard!'));
+});
+
+renderMatches();
+</script>
+
+</body>
+</html>
