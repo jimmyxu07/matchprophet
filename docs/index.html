@@ -497,17 +497,20 @@ document.getElementById('predict-btn').addEventListener('click', async () => {
     // Defensive: if worker returns error alongside valid verdict, use the verdict
     if (data.error && !data.verdict) throw new Error(data.error);
     if (data.error) console.warn('Worker returned warning:', data.error);
-    aiResult = {verdict: data.verdict, quote: data.quote, homeScore, awayScore};
-    document.getElementById('ai-text').textContent = data.verdict;
-    document.getElementById('ai-quote').textContent = '"' + data.quote + '"';
+    // Guard against null/undefined fields from worker
+    const verdict = data.verdict || '';
+    const quote = data.quote || '';
+    aiResult = {verdict, quote, homeScore, awayScore};
+    document.getElementById('ai-text').textContent = verdict;
+    document.getElementById('ai-quote').textContent = quote ? '"' + quote + '"' : '';
     document.getElementById('result-section').classList.remove('hidden');
     document.getElementById('share-section').classList.remove('hidden');
-    renderShareCard();
+    try { renderShareCard(); } catch(cardErr) { console.error('Share card render failed:', cardErr); }
     savePrediction(); // update with AI verdict & quote
     window.scrollTo({top: document.getElementById('result-section').offsetTop - 80, behavior:'smooth'});
   } catch(e) {
-    alert(t('ai_error'));
-    console.error(e);
+    console.error('Prediction error:', e);
+    alert(t('ai_error') + '\n\n[' + (e.message || 'Unknown') + ']');
   } finally {
     btn.disabled = false;
     btn.textContent = t('predict_btn');
@@ -557,7 +560,7 @@ function renderShareCard() {
 
   ctx.fillStyle = '#f59e0b';
   ctx.font = 'italic bold 56px Inter, sans-serif';
-  const words = aiResult.quote.split(' ');
+  const words = (aiResult.quote || '').split(' ');
   let line = '', y = 1100;
   for (let n=0; n<words.length; n++) {
     const test = line + words[n] + ' ';
