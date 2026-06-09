@@ -133,12 +133,34 @@ export default {
       const data = await res.json();
       const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
       
-      const verdictMatch = text.match(/VERDICT:\s*([\s\S]*?)(?=QUOTE:|$)/);
-      const quoteMatch = text.match(/QUOTE:\s*(.*)/);
+      // Parse with flexible regex (case-insensitive, allows markdown bold)
+      const verdictMatch = text.match(/\*?\*?VERDICT\*?\*?[\s:：]+([\s\S]*?)(?=\*?\*?QUOTE\*?\*?[\s:：]|$)/i);
+      const quoteMatch = text.match(/\*?\*?QUOTE\*?\*?[\s:：]+(.+)/i);
+      
+      let verdict = verdictMatch ? verdictMatch[1].trim() : text.trim();
+      let quote = quoteMatch ? quoteMatch[1].trim() : '';
+      
+      // Heuristic fallback: if no quote, try last line/sentence
+      if (!quote && verdict) {
+        const lines = verdict.split(/\n/).filter(l => l.trim());
+        if (lines.length > 1) {
+          quote = lines.pop().trim();
+          verdict = lines.join('\n').trim();
+        } else {
+          const sentences = verdict.match(/[^.!?。！？]+[.!?。！？]+/g);
+          if (sentences && sentences.length > 1) {
+            quote = sentences.pop().trim();
+            verdict = sentences.join(' ').trim();
+          }
+        }
+      }
+      
+      if (!quote) quote = p.fallback;
+      if (!verdict) verdict = p.fallback;
       
       return new Response(JSON.stringify({
-        verdict: verdictMatch ? verdictMatch[1].trim() : text,
-        quote: quoteMatch ? quoteMatch[1].trim() : p.fallback,
+        verdict,
+        quote,
         raw: text
       }), { headers: corsHeaders });
       
