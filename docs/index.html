@@ -169,7 +169,7 @@ const I18N = {
     card_subtitle: 'Download and share to summon the football gods',
     download: '⬇️ Download', copy: '📋 Copy Text',
     copied: 'Copied to clipboard!',
-    my_predictions: '📜 My Predictions', back_to_predict: '← Back to Predict', clear_history: 'Clear All', no_predictions: 'No predictions yet. Pick a match and let the AI roast you!',
+    my_predictions: '📜 My Predictions', back_to_predict: '← Back to Predict', clear_history: 'Clear All', no_predictions: 'No predictions yet. Pick a match and let the AI roast you!', roast_pending: 'AI roast pending... retry later.',
     ai_error: 'AI is having a moment. Try again in a few seconds.',
     load_error: 'Failed to load matches. Please refresh.',
     privacy: 'Privacy', about: 'About',
@@ -196,7 +196,7 @@ const I18N = {
     card_subtitle: '下载分享，召唤足球之神',
     download: '⬇️ 下载', copy: '📋 复制文字',
     copied: '已复制到剪贴板！',
-    my_predictions: '📜 我的预测', back_to_predict: '← 返回预测', clear_history: '清空全部', no_predictions: '暂无预测。选一场比赛，让AI烧烤你！',
+    my_predictions: '📜 我的预测', back_to_predict: '← 返回预测', clear_history: '清空全部', no_predictions: '暂无预测。选一场比赛，让AI烧烤你！', roast_pending: 'AI烧烤生成中... 请稍后重试',
     ai_error: 'AI正在打猛，请几秒后重试。',
     load_error: '加载失败，请刷新页面。',
     privacy: '隐私', about: '关于',
@@ -223,7 +223,7 @@ const I18N = {
     card_subtitle: 'Téléchargez et partagez pour invoquer les dieux du foot',
     download: '⬇️ Télécharger', copy: '📋 Copier le texte',
     copied: 'Copié dans le presse-papiers !',
-    my_predictions: '📜 Mes Prédictions', back_to_predict: '← Retour aux prédictions', clear_history: 'Tout effacer', no_predictions: 'Aucune prédiction pour l\'instant. Choisissez un match et laissez l\'IA vous clouer !',
+    my_predictions: '📜 Mes Prédictions', back_to_predict: '← Retour aux prédictions', clear_history: 'Tout effacer', no_predictions: 'Aucune prédiction pour l\'instant. Choisissez un match et laissez l\'IA vous clouer !', roast_pending: 'Roast IA en cours... réessayez plus tard.',
     ai_error: 'L\'IA a un moment de faiblesse. Réessayez dans quelques secondes.',
     load_error: 'Échec du chargement. Veuillez actualiser.',
     privacy: 'Confidentialité', about: 'À propos',
@@ -250,7 +250,7 @@ const I18N = {
     card_subtitle: 'Herunterladen und teilen, um die Fußballgötter zu beschwören',
     download: '⬇️ Herunterladen', copy: '📋 Text kopieren',
     copied: 'In die Zwischenablage kopiert!',
-    my_predictions: '📜 Meine Vorhersagen', back_to_predict: '← Zurück zur Vorhersage', clear_history: 'Alle löschen', no_predictions: 'Noch keine Vorhersagen. Wähle ein Spiel und lass die KI dich verbrennen!',
+    my_predictions: '📜 Meine Vorhersagen', back_to_predict: '← Zurück zur Vorhersage', clear_history: 'Alle löschen', no_predictions: 'Noch keine Vorhersagen. Wähle ein Spiel und lass die KI dich verbrennen!', roast_pending: 'KI-Roast wird generiert... später erneut versuchen.',
     ai_error: 'Die KI hat einen Moment. Versuche es in wenigen Sekunden erneut.',
     load_error: 'Laden fehlgeschlagen. Bitte aktualisieren.',
     privacy: 'Datenschutz', about: 'Über',
@@ -277,7 +277,7 @@ const I18N = {
     card_subtitle: 'Descarga y comparte para invocar a los dioses del fútbol',
     download: '⬇️ Descargar', copy: '📋 Copiar texto',
     copied: '¡Copiado al portapapeles!',
-    my_predictions: '📜 Mis Predicciones', back_to_predict: '← Volver a predecir', clear_history: 'Borrar todo', no_predictions: 'Aún no hay predicciones. Elige un partido y deja que la IA te queme.',
+    my_predictions: '📜 Mis Predicciones', back_to_predict: '← Volver a predecir', clear_history: 'Borrar todo', no_predictions: 'Aún no hay predicciones. Elige un partido y deja que la IA te queme.', roast_pending: 'Roast de IA pendiente... inténtalo más tarde.',
     ai_error: 'La IA está teniendo un momento. Inténtalo de nuevo en unos segundos.',
     load_error: 'Error al cargar. Por favor, actualiza.',
     privacy: 'Privacidad', about: 'Acerca de',
@@ -304,7 +304,7 @@ const I18N = {
     card_subtitle: 'Baixe e compartilhe para invocar os deuses do futebol',
     download: '⬇️ Baixar', copy: '📋 Copiar texto',
     copied: 'Copiado para a área de transferência!',
-    my_predictions: '📜 Minhas Previsões', back_to_predict: '← Voltar a prever', clear_history: 'Limpar tudo', no_predictions: 'Ainda não há previsões. Escolha uma partida e deixe a IA te queimar!',
+    my_predictions: '📜 Minhas Previsões', back_to_predict: '← Voltar a prever', clear_history: 'Limpar tudo', no_predictions: 'Ainda não há previsões. Escolha uma partida e deixe a IA te queimar!', roast_pending: 'Roast da IA pendente... tente novamente mais tarde.',
     ai_error: 'A IA está tendo um momento. Tente novamente em alguns segundos.',
     load_error: 'Falha ao carregar. Por favor, atualize.',
     privacy: 'Privacidade', about: 'Sobre',
@@ -485,6 +485,11 @@ document.getElementById('predict-btn').addEventListener('click', async () => {
   const btn = document.getElementById('predict-btn');
   const homeScore = document.getElementById('home-score').value;
   const awayScore = document.getElementById('away-score').value;
+  
+  // Save user's prediction immediately (before AI call) so it's never lost
+  aiResult = {homeScore, awayScore, verdict: null, quote: null};
+  savePrediction();
+  
   btn.disabled = true;
   btn.textContent = t('thinking');
   try {
@@ -496,7 +501,7 @@ document.getElementById('predict-btn').addEventListener('click', async () => {
     document.getElementById('result-section').classList.remove('hidden');
     document.getElementById('share-section').classList.remove('hidden');
     renderShareCard();
-    savePrediction();
+    savePrediction(); // update with AI verdict & quote
     window.scrollTo({top: document.getElementById('result-section').offsetTop - 80, behavior:'smooth'});
   } catch(e) {
     alert(t('ai_error'));
@@ -650,7 +655,7 @@ function renderHistory() {
         <span class="font-semibold text-sm">${localizeTeam(h.away)}</span>
         <span class="flag text-lg">${h.awayFlag}</span>
       </div>
-      <div class="text-sm text-slate-300 italic border-l-2 border-amber-500 pl-3">"${h.quote}"</div>
+      <div class="text-sm text-slate-300 italic border-l-2 ${h.quote ? 'border-amber-500' : 'border-slate-600'} pl-3">${h.quote ? '"' + h.quote + '"' : '<span class="text-slate-500">' + (I18N[currentLang].roast_pending || 'AI roast pending... retry later.') + '</span>'}</div>
     </div>
   `).join('');
 }
