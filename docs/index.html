@@ -322,8 +322,7 @@ function applyI18n() {
 }
 
 // ====== CONFIG ======
-const GEMINI_API_KEY='AIzaSyAuqlhaJfTOEY-cnEJ5QLuaS0aon3QaL_E';
-const GEMINI_MODEL = 'gemini-3.5-flash';
+const API_URL = 'https://matchprophet-api.quickalt-api.workers.dev';
 
 // ====== FLAG HELPER ======
 function codeToFlag(code) {
@@ -387,23 +386,14 @@ function selectMatch(id) {
 }
 
 // ====== AI PREDICTION ======
-async function callGemini(prompt) {
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`, {
+async function callWorker(match, homeScore, awayScore) {
+  const res = await fetch(API_URL, {
     method: 'POST',
     headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({
-      contents: [{parts:[{text: prompt}]}],
-      generationConfig: {temperature:0.9, maxOutputTokens:512}
-    })
+    body: JSON.stringify({match, homeScore, awayScore, lang: currentLang})
   });
-  if (!res.ok) throw new Error('AI API error: '+res.status);
-  const data = await res.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || t('ai_error');
-}
-
-function buildPrompt(match, homeScore, awayScore) {
-  const L = I18N[currentLang];
-  return `${L.prompt_persona}\n\nThe user predicted: ${match.home} ${homeScore} - ${awayScore} ${match.away}\n\n${L.prompt_format}`;
+  if (!res.ok) throw new Error('API error: '+res.status);
+  return await res.json();
 }
 
 document.getElementById('predict-btn').addEventListener('click', async () => {
@@ -413,12 +403,11 @@ document.getElementById('predict-btn').addEventListener('click', async () => {
   btn.disabled = true;
   btn.textContent = t('thinking');
   try {
-    const raw = await callGemini(buildPrompt(selectedMatch, homeScore, awayScore));
-    const verdict = raw.match(/VERDICT:\s*([\s\S]*?)(?=QUOTE:|$)/)?.[1]?.trim() || raw;
-    const quote = raw.match(/QUOTE:\s*(.*)/)?.[1]?.trim() || t('fallback_quote');
-    aiResult = {verdict, quote, homeScore, awayScore};
-    document.getElementById('ai-text').textContent = verdict;
-    document.getElementById('ai-quote').textContent = '"' + quote + '"';
+    const data = await callWorker(selectedMatch, homeScore, awayScore);
+    if (data.error) throw new Error(data.error);
+    aiResult = {verdict: data.verdict, quote: data.quote, homeScore, awayScore};
+    document.getElementById('ai-text').textContent = data.verdict;
+    document.getElementById('ai-quote').textContent = '"' + data.quote + '"';
     document.getElementById('result-section').classList.remove('hidden');
     document.getElementById('share-section').classList.remove('hidden');
     renderShareCard();
