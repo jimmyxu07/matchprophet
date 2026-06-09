@@ -494,7 +494,9 @@ document.getElementById('predict-btn').addEventListener('click', async () => {
   btn.textContent = t('thinking');
   try {
     const data = await callWorker(selectedMatch, homeScore, awayScore);
-    if (data.error) throw new Error(data.error);
+    // Defensive: if worker returns error alongside valid verdict, use the verdict
+    if (data.error && !data.verdict) throw new Error(data.error);
+    if (data.error) console.warn('Worker returned warning:', data.error);
     aiResult = {verdict: data.verdict, quote: data.quote, homeScore, awayScore};
     document.getElementById('ai-text').textContent = data.verdict;
     document.getElementById('ai-quote').textContent = '"' + data.quote + '"';
