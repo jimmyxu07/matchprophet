@@ -510,7 +510,17 @@ document.getElementById('predict-btn').addEventListener('click', async () => {
     window.scrollTo({top: document.getElementById('result-section').offsetTop - 80, behavior:'smooth'});
   } catch(e) {
     console.error('Prediction error:', e);
-    alert(t('ai_error') + '\n\n[' + (e.message || 'Unknown') + ']');
+    // Show error inline instead of alert so user isn't interrupted if result already rendered
+    const errDiv = document.createElement('div');
+    errDiv.className = 'mt-3 p-3 rounded-lg bg-red-900/30 border border-red-700/50 text-red-300 text-sm';
+    errDiv.textContent = t('ai_error') + ' [' + (e.message || 'Unknown') + ']';
+    const resultSection = document.getElementById('result-section');
+    if (!resultSection.classList.contains('hidden')) {
+      resultSection.appendChild(errDiv);
+      setTimeout(() => errDiv.remove(), 8000);
+    } else {
+      alert(t('ai_error'));
+    }
   } finally {
     btn.disabled = false;
     btn.textContent = t('predict_btn');
