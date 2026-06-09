@@ -126,6 +126,16 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#f8fafc;}
     </div>
   </section>
 
+  <section id="history-section" class="hidden mb-6">
+    <div class="card-gradient rounded-2xl p-6 border border-slate-700">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-bold" data-i18n="my_predictions">📜 My Predictions</h3>
+        <button onclick="clearHistory()" class="text-xs text-red-400 hover:text-red-300 underline" data-i18n="clear_history">Clear All</button>
+      </div>
+      <div id="history-list" class="grid gap-3"></div>
+    </div>
+  </section>
+
 </main>
 
 <footer class="border-t border-slate-800 mt-12 py-8 text-center text-sm text-slate-500">
@@ -155,6 +165,7 @@ const I18N = {
     card_subtitle: 'Download and share to summon the football gods',
     download: '⬇️ Download', copy: '📋 Copy Text',
     copied: 'Copied to clipboard!',
+    my_predictions: '📜 My Predictions', clear_history: 'Clear All', no_predictions: 'No predictions yet. Pick a match and let the AI roast you!',
     ai_error: 'AI is having a moment. Try again in a few seconds.',
     load_error: 'Failed to load matches. Please refresh.',
     privacy: 'Privacy', about: 'About',
@@ -181,6 +192,7 @@ const I18N = {
     card_subtitle: '下载分享，召唤足球之神',
     download: '⬇️ 下载', copy: '📋 复制文字',
     copied: '已复制到剪贴板！',
+    my_predictions: '📜 我的预测', clear_history: '清空全部', no_predictions: '暂无预测。选一场比赛，让AI烧烤你！',
     ai_error: 'AI正在打猛，请几秒后重试。',
     load_error: '加载失败，请刷新页面。',
     privacy: '隐私', about: '关于',
@@ -207,6 +219,7 @@ const I18N = {
     card_subtitle: 'Téléchargez et partagez pour invoquer les dieux du foot',
     download: '⬇️ Télécharger', copy: '📋 Copier le texte',
     copied: 'Copié dans le presse-papiers !',
+    my_predictions: '📜 Mes Prédictions', clear_history: 'Tout effacer', no_predictions: 'Aucune prédiction pour l\'instant. Choisissez un match et laissez l\'IA vous clouer !',
     ai_error: 'L\'IA a un moment de faiblesse. Réessayez dans quelques secondes.',
     load_error: 'Échec du chargement. Veuillez actualiser.',
     privacy: 'Confidentialité', about: 'À propos',
@@ -233,6 +246,7 @@ const I18N = {
     card_subtitle: 'Herunterladen und teilen, um die Fußballgötter zu beschwören',
     download: '⬇️ Herunterladen', copy: '📋 Text kopieren',
     copied: 'In die Zwischenablage kopiert!',
+    my_predictions: '📜 Meine Vorhersagen', clear_history: 'Alle löschen', no_predictions: 'Noch keine Vorhersagen. Wähle ein Spiel und lass die KI dich verbrennen!',
     ai_error: 'Die KI hat einen Moment. Versuche es in wenigen Sekunden erneut.',
     load_error: 'Laden fehlgeschlagen. Bitte aktualisieren.',
     privacy: 'Datenschutz', about: 'Über',
@@ -259,6 +273,7 @@ const I18N = {
     card_subtitle: 'Descarga y comparte para invocar a los dioses del fútbol',
     download: '⬇️ Descargar', copy: '📋 Copiar texto',
     copied: '¡Copiado al portapapeles!',
+    my_predictions: '📜 Mis Predicciones', clear_history: 'Borrar todo', no_predictions: 'Aún no hay predicciones. Elige un partido y deja que la IA te queme.',
     ai_error: 'La IA está teniendo un momento. Inténtalo de nuevo en unos segundos.',
     load_error: 'Error al cargar. Por favor, actualiza.',
     privacy: 'Privacidad', about: 'Acerca de',
@@ -285,6 +300,7 @@ const I18N = {
     card_subtitle: 'Baixe e compartilhe para invocar os deuses do futebol',
     download: '⬇️ Baixar', copy: '📋 Copiar texto',
     copied: 'Copiado para a área de transferência!',
+    my_predictions: '📜 Minhas Previsões', clear_history: 'Limpar tudo', no_predictions: 'Ainda não há previsões. Escolha uma partida e deixe a IA te queimar!',
     ai_error: 'A IA está tendo um momento. Tente novamente em alguns segundos.',
     load_error: 'Falha ao carregar. Por favor, atualize.',
     privacy: 'Privacidade', about: 'Sobre',
@@ -316,6 +332,7 @@ function setLang(lang) {
   }
   applyI18n();
   renderMatches();
+  renderHistory();
   if (selectedMatch) {
     document.getElementById('home-name').textContent = localizeTeam(selectedMatch.home);
     document.getElementById('away-name').textContent = localizeTeam(selectedMatch.away);
@@ -475,6 +492,7 @@ document.getElementById('predict-btn').addEventListener('click', async () => {
     document.getElementById('result-section').classList.remove('hidden');
     document.getElementById('share-section').classList.remove('hidden');
     renderShareCard();
+    savePrediction();
     window.scrollTo({top: document.getElementById('result-section').offsetTop - 80, behavior:'smooth'});
   } catch(e) {
     alert(t('ai_error'));
@@ -565,10 +583,80 @@ document.getElementById('copy-text-btn').addEventListener('click', () => {
   navigator.clipboard.writeText(text).then(() => alert(t('copied')));
 });
 
+// ====== PREDICTION HISTORY ======
+function savePrediction() {
+  if (!selectedMatch || !aiResult) return;
+  const history = JSON.parse(localStorage.getItem('mp_history') || '[]');
+  const entry = {
+    matchId: selectedMatch.id,
+    date: selectedMatch.date,
+    group: selectedMatch.group,
+    home: selectedMatch.home,
+    away: selectedMatch.away,
+    homeFlag: selectedMatch.homeFlag,
+    awayFlag: selectedMatch.awayFlag,
+    homeScore: aiResult.homeScore,
+    awayScore: aiResult.awayScore,
+    verdict: aiResult.verdict,
+    quote: aiResult.quote,
+    timestamp: Date.now()
+  };
+  // Avoid duplicates for same match - replace if exists
+  const existingIndex = history.findIndex(h => h.matchId === selectedMatch.id);
+  if (existingIndex >= 0) {
+    history[existingIndex] = entry;
+  } else {
+    history.unshift(entry);
+  }
+  // Keep max 50 entries
+  if (history.length > 50) history.pop();
+  localStorage.setItem('mp_history', JSON.stringify(history));
+  renderHistory();
+}
+
+function renderHistory() {
+  const history = JSON.parse(localStorage.getItem('mp_history') || '[]');
+  const section = document.getElementById('history-section');
+  const list = document.getElementById('history-list');
+  
+  if (history.length === 0) {
+    section.classList.add('hidden');
+    return;
+  }
+  
+  section.classList.remove('hidden');
+  list.innerHTML = history.map(h => `
+    <div class="p-4 rounded-xl bg-slate-800/50 border border-slate-700">
+      <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center gap-2 text-sm">
+          <span class="text-xs font-bold text-slate-500 bg-slate-900 px-2 py-1 rounded">${h.group}</span>
+          <span class="text-slate-400">${h.date}</span>
+        </div>
+        <div class="text-lg font-bold text-amber-400">${h.homeScore} - ${h.awayScore}</div>
+      </div>
+      <div class="flex items-center gap-2 mb-2">
+        <span class="flag text-lg">${h.homeFlag}</span>
+        <span class="font-semibold text-sm">${localizeTeam(h.home)}</span>
+        <span class="text-slate-500 text-sm">vs</span>
+        <span class="font-semibold text-sm">${localizeTeam(h.away)}</span>
+        <span class="flag text-lg">${h.awayFlag}</span>
+      </div>
+      <div class="text-sm text-slate-300 italic border-l-2 border-amber-500 pl-3">"${h.quote}"</div>
+    </div>
+  `).join('');
+}
+
+function clearHistory() {
+  if (!confirm('Clear all predictions?')) return;
+  localStorage.removeItem('mp_history');
+  renderHistory();
+}
+
 // ====== INIT ======
 document.getElementById('sort-mode').value = sortMode;
 setLang(currentLang);
 loadData();
+renderHistory();
 </script>
 
 </body>
