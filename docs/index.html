@@ -497,6 +497,7 @@ document.getElementById('predict-btn').addEventListener('click', async () => {
     // Defensive: if worker returns error alongside valid verdict, use the verdict
     if (data.error && !data.verdict) throw new Error(data.error);
     if (data.error) console.warn('Worker returned warning:', data.error);
+    console.log('AI raw response:', data.raw);
     // Guard against null/undefined fields from worker
     const verdict = data.verdict || '';
     const quote = data.quote || '';
