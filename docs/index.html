@@ -51,7 +51,13 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#f8fafc;}
   </section>
 
   <section id="match-section" class="card-gradient rounded-2xl p-6 mb-6 glow border border-slate-700">
-    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4" data-i18n="select_match">Select Match</h3>
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider" data-i18n="select_match">Select Match</h3>
+      <select id="sort-mode" onchange="setSortMode(this.value)" class="bg-slate-800 border border-slate-600 rounded-lg px-3 py-1.5 text-sm text-slate-300 focus:border-amber-500 focus:outline-none cursor-pointer">
+        <option value="group" data-i18n="sort_group">By Group</option>
+        <option value="date" data-i18n="sort_date">By Date</option>
+      </select>
+    </div>
     <div class="grid gap-3" id="match-list">
       <div class="text-center py-8 text-slate-500" data-i18n="loading">Loading matches...</div>
     </div>
@@ -139,6 +145,7 @@ const I18N = {
     hero_title: 'AI Sees the Future.<br><span class="text-transparent bg-clip-text accent-gradient">And It Roasts You.</span>',
     hero_subtitle: 'Pick a World Cup 2026 match. Enter your prediction. Let our AI pundit tell you why you\'re wrong.',
     select_match: 'Select Match', loading: 'Loading matches...',
+    sort_group: 'By Group', sort_date: 'By Date',
     home: 'Home', away: 'Away',
     predict_btn: '🔮 Let the AI Roast Me',
     thinking: '🧠 The Prophet is thinking...',
@@ -164,6 +171,7 @@ const I18N = {
     hero_title: 'AI看见未来。<br><span class="text-transparent bg-clip-text accent-gradient">然后烧烤你。</span>',
     hero_subtitle: '选一场2026世界杯比赛，输入你的预测，让AI足球评论员告诉你为什么你错了。',
     select_match: '选择比赛', loading: '加载中...',
+    sort_group: '按小组', sort_date: '按日期',
     home: '主场', away: '客场',
     predict_btn: '🔮 让AI烧烤我',
     thinking: '🧠 先知正在思考...',
@@ -189,6 +197,7 @@ const I18N = {
     hero_title: 'L\'IA voit l\'avenir.<br><span class="text-transparent bg-clip-text accent-gradient">Et elle vous cloue.</span>',
     hero_subtitle: 'Choisissez un match de la Coupe du Monde 2026. Entrez votre prédiction. Laissez notre consultant IA vous dire pourquoi vous avez tort.',
     select_match: 'Choisir un match', loading: 'Chargement...',
+    sort_group: 'Par Groupe', sort_date: 'Par Date',
     home: 'Domicile', away: 'Extérieur',
     predict_btn: '🔮 Laisse l\'IA me clouer',
     thinking: '🧠 Le Prophète réfléchit...',
@@ -214,6 +223,7 @@ const I18N = {
     hero_title: 'Die KI sieht die Zukunft.<br><span class="text-transparent bg-clip-text accent-gradient">Und sie verbrennt dich.</span>',
     hero_subtitle: 'Wähle ein WM 2026-Spiel. Gib deine Vorhersage ein. Lass unseren KI-Experten dir sagen, warum du falsch liegst.',
     select_match: 'Spiel auswählen', loading: 'Spiele werden geladen...',
+    sort_group: 'Nach Gruppe', sort_date: 'Nach Datum',
     home: 'Heim', away: 'Auswärts',
     predict_btn: '🔮 Lass die KI mich verbrennen',
     thinking: '🧠 Der Prophet denkt nach...',
@@ -239,6 +249,7 @@ const I18N = {
     hero_title: 'La IA ve el futuro.<br><span class="text-transparent bg-clip-text accent-gradient">Y te quema.</span>',
     hero_subtitle: 'Elige un partido del Mundial 2026. Introduce tu predicción. Deja que nuestro experto de IA te diga por qué estás equivocado.',
     select_match: 'Seleccionar Partido', loading: 'Cargando partidos...',
+    sort_group: 'Por Grupo', sort_date: 'Por Fecha',
     home: 'Local', away: 'Visitante',
     predict_btn: '🔮 Deja que la IA me queme',
     thinking: '🧠 El Profeta está pensando...',
@@ -264,6 +275,7 @@ const I18N = {
     hero_title: 'A IA vê o futuro.<br><span class="text-transparent bg-clip-text accent-gradient">E te queima.</span>',
     hero_subtitle: 'Escolha uma partida da Copa do Mundo 2026. Insira sua previsão. Deixe nosso especialista de IA te dizer por que você está errado.',
     select_match: 'Selecionar Partida', loading: 'Carregando partidas...',
+    sort_group: 'Por Grupo', sort_date: 'Por Data',
     home: 'Casa', away: 'Fora',
     predict_btn: '🔮 Deixa a IA me queimar',
     thinking: '🧠 O Profeta está pensando...',
@@ -287,6 +299,7 @@ const I18N = {
 };
 
 let currentLang = localStorage.getItem('mp_lang') || 'en';
+let sortMode = localStorage.getItem('mp_sort') || 'group';
 
 function setLang(lang) {
   currentLang = lang;
@@ -295,6 +308,12 @@ function setLang(lang) {
   document.querySelectorAll('.lang-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.lang === lang);
   });
+  // Update sort select options
+  const sortSelect = document.getElementById('sort-mode');
+  if (sortSelect) {
+    sortSelect.options[0].textContent = I18N[currentLang].sort_group;
+    sortSelect.options[1].textContent = I18N[currentLang].sort_date;
+  }
   applyI18n();
   renderMatches();
   if (selectedMatch) {
@@ -306,6 +325,12 @@ function setLang(lang) {
       renderShareCard();
     }
   }
+}
+
+function setSortMode(mode) {
+  sortMode = mode;
+  localStorage.setItem('mp_sort', mode);
+  renderMatches();
 }
 
 function t(key) {
@@ -373,7 +398,7 @@ function localizeTeam(name) {
 // ====== RENDER MATCH LIST ======
 function renderMatches() {
   const container = document.getElementById('match-list');
-  container.innerHTML = matches.map(m => `
+  const matchBtn = (m) => `
     <button onclick="selectMatch(${m.id})" class="w-full text-left p-4 rounded-xl bg-slate-800/50 hover:bg-slate-700 border border-slate-700 hover:border-amber-500/50 transition flex items-center justify-between group">
       <div class="flex items-center gap-3">
         <span class="text-xs font-bold text-slate-500 bg-slate-900 px-2 py-1 rounded">${m.group}</span>
@@ -385,7 +410,30 @@ function renderMatches() {
         <span class="flex items-center gap-1"><span class="font-semibold hidden sm:inline">${localizeTeam(m.away)}</span><span class="flag text-xl">${m.awayFlag}</span></span>
       </div>
     </button>
-  `).join('');
+  `;
+
+  if (sortMode === 'date') {
+    // Group by date
+    const byDate = {};
+    matches.forEach(m => {
+      if (!byDate[m.date]) byDate[m.date] = [];
+      byDate[m.date].push(m);
+    });
+    const sortedDates = Object.keys(byDate).sort();
+    container.innerHTML = sortedDates.map(date => {
+      const dateObj = new Date(date + 'T00:00:00');
+      const dateStr = dateObj.toLocaleDateString(currentLang === 'zh' ? 'zh-CN' : currentLang, { weekday: 'short', month: 'short', day: 'numeric' });
+      return `
+        <div class="mb-2">
+          <div class="text-xs font-bold text-amber-400 uppercase tracking-wider px-1 py-2">${dateStr}</div>
+          <div class="grid gap-2">${byDate[date].map(matchBtn).join('')}</div>
+        </div>
+      `;
+    }).join('');
+  } else {
+    // Group by group (default)
+    container.innerHTML = matches.map(matchBtn).join('');
+  }
 }
 
 function selectMatch(id) {
@@ -518,6 +566,7 @@ document.getElementById('copy-text-btn').addEventListener('click', () => {
 });
 
 // ====== INIT ======
+document.getElementById('sort-mode').value = sortMode;
 setLang(currentLang);
 loadData();
 </script>
