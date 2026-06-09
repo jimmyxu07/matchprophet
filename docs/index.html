@@ -13,6 +13,9 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#f8fafc;}
 .accent-gradient{background:linear-gradient(135deg,#f59e0b 0%,#ef4444 100%);}
 .glow{box-shadow:0 0 40px rgba(245,158,11,0.15);}
 .flag{font-size:2.5rem;line-height:1;}
+.lang-btn{padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;border:1px solid transparent;background:transparent;color:#94a3b8;}
+.lang-btn:hover{color:#f8fafc;}
+.lang-btn.active{background:#f59e0b;color:#0f172a;border-color:#f59e0b;}
 </style>
 </head>
 <body class="min-h-screen">
@@ -23,24 +26,34 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#f8fafc;}
       <span class="text-2xl">🔮</span>
       <h1 class="text-xl font-black tracking-tight">MatchProphet</h1>
     </div>
-    <nav class="flex gap-4 text-sm text-slate-400">
-      <a href="index.html" class="text-amber-400 font-semibold">Predict</a>
-      <a href="about.html" class="hover:text-slate-200">About</a>
-    </nav>
+    <div class="flex items-center gap-3">
+      <div id="lang-switcher" class="flex gap-1">
+        <button class="lang-btn active" data-lang="en" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="zh" onclick="setLang('zh')">中</button>
+        <button class="lang-btn" data-lang="fr" onclick="setLang('fr')">FR</button>
+        <button class="lang-btn" data-lang="de" onclick="setLang('de')">DE</button>
+        <button class="lang-btn" data-lang="es" onclick="setLang('es')">ES</button>
+        <button class="lang-btn" data-lang="pt" onclick="setLang('pt')">PT</button>
+      </div>
+      <nav class="flex gap-4 text-sm text-slate-400 ml-2 border-l border-slate-700 pl-3">
+        <a href="index.html" class="text-amber-400 font-semibold" data-i18n="nav_predict">Predict</a>
+        <a href="about.html" class="hover:text-slate-200" data-i18n="nav_about">About</a>
+      </nav>
+    </div>
   </div>
 </header>
 
 <main class="max-w-3xl mx-auto px-4 py-8">
 
   <section class="text-center mb-10">
-    <h2 class="text-3xl md:text-4xl font-black mb-3">AI Sees the Future.<br><span class="text-transparent bg-clip-text accent-gradient">And It Roasts You.</span></h2>
-    <p class="text-slate-400 max-w-md mx-auto">Pick a World Cup 2026 match. Enter your prediction. Let our AI pundit tell you why you're wrong.</p>
+    <h2 class="text-3xl md:text-4xl font-black mb-3" data-i18n-html="hero_title">AI Sees the Future.<br><span class="text-transparent bg-clip-text accent-gradient">And It Roasts You.</span></h2>
+    <p class="text-slate-400 max-w-md mx-auto" data-i18n="hero_subtitle">Pick a World Cup 2026 match. Enter your prediction. Let our AI pundit tell you why you're wrong.</p>
   </section>
 
   <section id="match-section" class="card-gradient rounded-2xl p-6 mb-6 glow border border-slate-700">
-    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Select Match</h3>
+    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4" data-i18n="select_match">Select Match</h3>
     <div class="grid gap-3" id="match-list">
-      <div class="text-center py-8 text-slate-500">Loading matches...</div>
+      <div class="text-center py-8 text-slate-500" data-i18n="loading">Loading matches...</div>
     </div>
   </section>
 
@@ -50,14 +63,14 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#f8fafc;}
         <span id="home-flag" class="flag"></span>
         <div>
           <div id="home-name" class="font-bold text-lg"></div>
-          <div class="text-xs text-slate-500">Home</div>
+          <div class="text-xs text-slate-500" data-i18n="home">Home</div>
         </div>
       </div>
       <div class="text-slate-500 font-bold text-xl">VS</div>
       <div class="flex items-center gap-3 text-right">
         <div>
           <div id="away-name" class="font-bold text-lg"></div>
-          <div class="text-xs text-slate-500">Away</div>
+          <div class="text-xs text-slate-500" data-i18n="away">Away</div>
         </div>
         <span id="away-flag" class="flag"></span>
       </div>
@@ -71,10 +84,10 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#f8fafc;}
         class="w-20 h-20 text-center text-4xl font-black bg-slate-800 border-2 border-slate-600 rounded-xl focus:border-amber-500 focus:outline-none text-white">
     </div>
 
-    <button id="predict-btn" class="w-full py-4 rounded-xl font-bold text-lg accent-gradient text-white hover:opacity-90 transition shadow-lg">
+    <button id="predict-btn" class="w-full py-4 rounded-xl font-bold text-lg accent-gradient text-white hover:opacity-90 transition shadow-lg" data-i18n="predict_btn">
       🔮 Let the AI Roast Me
     </button>
-    <p class="text-center text-xs text-slate-500 mt-3">Powered by Gemini AI · For entertainment only</p>
+    <p class="text-center text-xs text-slate-500 mt-3" data-i18n="powered_by">Powered by Gemini AI · For entertainment only</p>
   </section>
 
   <section id="result-section" class="hidden mb-6">
@@ -83,7 +96,7 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#f8fafc;}
         <div class="w-10 h-10 rounded-full accent-gradient flex items-center justify-center text-lg flex-shrink-0">🤖</div>
         <div>
           <div class="font-bold text-amber-400">Prophet AI</div>
-          <div class="text-xs text-slate-500">Certified Ball Knowledge Haver</div>
+          <div class="text-xs text-slate-500" data-i18n="ai_subtitle">Certified Ball Knowledge Haver</div>
         </div>
       </div>
       <div id="ai-text" class="text-lg leading-relaxed text-slate-200 mb-4"></div>
@@ -93,15 +106,15 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#f8fafc;}
 
   <section id="share-section" class="hidden mb-6">
     <div class="text-center mb-4">
-      <h3 class="text-lg font-bold">Your Prophecy Card</h3>
-      <p class="text-sm text-slate-400">Download and share to summon the football gods</p>
+      <h3 class="text-lg font-bold" data-i18n="card_title">Your Prophecy Card</h3>
+      <p class="text-sm text-slate-400" data-i18n="card_subtitle">Download and share to summon the football gods</p>
     </div>
     <canvas id="share-canvas" width="1080" height="1920" class="w-full max-w-sm mx-auto rounded-xl shadow-2xl border border-slate-700"></canvas>
     <div class="flex gap-3 justify-center mt-4">
-      <button id="download-btn" class="px-6 py-3 rounded-xl font-bold bg-slate-700 hover:bg-slate-600 transition text-white">
+      <button id="download-btn" class="px-6 py-3 rounded-xl font-bold bg-slate-700 hover:bg-slate-600 transition text-white" data-i18n="download">
         ⬇️ Download
       </button>
-      <button id="copy-text-btn" class="px-6 py-3 rounded-xl font-bold bg-slate-700 hover:bg-slate-600 transition text-white">
+      <button id="copy-text-btn" class="px-6 py-3 rounded-xl font-bold bg-slate-700 hover:bg-slate-600 transition text-white" data-i18n="copy">
         📋 Copy Text
       </button>
     </div>
@@ -111,16 +124,205 @@ body{font-family:'Inter',sans-serif;background:#0f172a;color:#f8fafc;}
 
 <footer class="border-t border-slate-800 mt-12 py-8 text-center text-sm text-slate-500">
   <p>MatchProphet — AI-powered World Cup 2026 entertainment · Not affiliated with FIFA</p>
-  <p class="mt-2">For entertainment only. No real betting, no real money.</p>
+  <p class="mt-2" data-i18n="disclaimer_footer">For entertainment only. No real betting, no real money.</p>
   <div class="mt-3 flex justify-center gap-4">
-    <a href="privacy.html" class="hover:text-slate-300">Privacy</a>
-    <a href="about.html" class="hover:text-slate-300">About</a>
+    <a href="privacy.html" class="hover:text-slate-300" data-i18n="privacy">Privacy</a>
+    <a href="about.html" class="hover:text-slate-300" data-i18n="about">About</a>
   </div>
 </footer>
 
 <script>
+// ====== I18N ======
+const I18N = {
+  en: {
+    nav_predict: 'Predict', nav_about: 'About',
+    hero_title: 'AI Sees the Future.<br><span class="text-transparent bg-clip-text accent-gradient">And It Roasts You.</span>',
+    hero_subtitle: 'Pick a World Cup 2026 match. Enter your prediction. Let our AI pundit tell you why you\'re wrong.',
+    select_match: 'Select Match', loading: 'Loading matches...',
+    home: 'Home', away: 'Away',
+    predict_btn: '🔮 Let the AI Roast Me',
+    thinking: '🧠 The Prophet is thinking...',
+    powered_by: 'Powered by Gemini AI · For entertainment only',
+    ai_subtitle: 'Certified Ball Knowledge Haver',
+    card_title: 'Your Prophecy Card',
+    card_subtitle: 'Download and share to summon the football gods',
+    download: '⬇️ Download', copy: '📋 Copy Text',
+    copied: 'Copied to clipboard!',
+    ai_error: 'AI is having a moment. Try again in a few seconds.',
+    load_error: 'Failed to load matches. Please refresh.',
+    privacy: 'Privacy', about: 'About',
+    disclaimer_footer: 'For entertainment only. No real betting, no real money.',
+    share_title: 'World Cup 2026 Prediction',
+    share_brand: 'AI-powered football prophecies',
+    prompt_persona: 'You are "Prophet AI", a brutally honest, funny, and slightly unhinged football pundit who predicts World Cup 2026 matches. Your personality: think combining Gary Neville\'s rage, Roy Keane\'s disdain, and a Twitter shitposter. You speak in short punchy paragraphs.',
+    prompt_format: 'Respond in EXACTLY this format (keep the labels):\nVERDICT: [2-3 sentences roasting the user\'s prediction and giving your own prediction with reasoning. Be funny, use football memes, reference real players if relevant. No betting terms.]\n\nQUOTE: [One iconic punchline under 120 characters that the user can tweet. Make it savage but family-friendly.]\n\nKeep it entertaining. This is purely for fun, not gambling.',
+    fallback_quote: 'Bold prediction. Probably wrong.',
+    copy_template: (h,hs,a,as,q) => `🔮 My World Cup 2026 Prediction:\n${h} ${hs} - ${as} ${a}\n\n💬 "${q}"\n\nGenerated by MatchProphet`
+  },
+  zh: {
+    nav_predict: '预测', nav_about: '关于',
+    hero_title: 'AI看见未来。<br><span class="text-transparent bg-clip-text accent-gradient">然后烧烤你。</span>',
+    hero_subtitle: '选一场2026世界杯比赛，输入你的预测，让AI足球评论员告诉你为什么你错了。',
+    select_match: '选择比赛', loading: '加载中...',
+    home: '主场', away: '客场',
+    predict_btn: '🔮 让AI烧烤我',
+    thinking: '🧠 先知正在思考...',
+    powered_by: '由 Gemini AI 驱动 · 仅供娱乐',
+    ai_subtitle: '认证球经知识拥有者',
+    card_title: '你的预言卡',
+    card_subtitle: '下载分享，召唤足球之神',
+    download: '⬇️ 下载', copy: '📋 复制文字',
+    copied: '已复制到剪贴板！',
+    ai_error: 'AI正在打猛，请几秒后重试。',
+    load_error: '加载失败，请刷新页面。',
+    privacy: '隐私', about: '关于',
+    disclaimer_footer: '仅供娱乐。无真实赌博，无真实资金。',
+    share_title: '2026世界杯预测',
+    share_brand: 'AI足球预言',
+    prompt_persona: '你是"先知AI"，一个毒舌、有趣、略微瘆狂的足球评论员，专门预测2026世界杯比赛。你的性格：混合了加里·内维尔的愤怒、罗伊·基恩的不屑，以及推特上的嗡嗡人。你用简短有力的段落说话。请用中文回复。',
+    prompt_format: '请严格按以下格式回复（保留标签）：\nVERDICT: [用2-3句话烧烤用户的预测，并给出你自己的预测和理由。要有趣，用足球梗，如果相关可以提及现实球员。禁止使用赌博词汇。]\n\nQUOTE: [一句不超120字符的经典金句，用户可以发推特。要狠但是全家安全的。]\n\n保持娱乐性。这纯粹是为了好玩，不是赌博。',
+    fallback_quote: '大胆的预测。可能是错的。',
+    copy_template: (h,hs,a,as,q) => `🔮 我的2026世界杯预测：\n${h} ${hs} - ${as} ${a}\n\n💬 "${q}"\n\n由 MatchProphet 生成`
+  },
+  fr: {
+    nav_predict: 'Prédire', nav_about: 'À propos',
+    hero_title: 'L\'IA voit l\'avenir.<br><span class="text-transparent bg-clip-text accent-gradient">Et elle vous cloue.</span>',
+    hero_subtitle: 'Choisissez un match de la Coupe du Monde 2026. Entrez votre prédiction. Laissez notre consultant IA vous dire pourquoi vous avez tort.',
+    select_match: 'Choisir un match', loading: 'Chargement...',
+    home: 'Domicile', away: 'Extérieur',
+    predict_btn: '🔮 Laisse l\'IA me clouer',
+    thinking: '🧠 Le Prophète réfléchit...',
+    powered_by: 'Propulsé par Gemini AI · Uniquement pour le divertissement',
+    ai_subtitle: 'Expert Certifié en Connaissance du Ballon',
+    card_title: 'Votre Carte de Prophétie',
+    card_subtitle: 'Téléchargez et partagez pour invoquer les dieux du foot',
+    download: '⬇️ Télécharger', copy: '📋 Copier le texte',
+    copied: 'Copié dans le presse-papiers !',
+    ai_error: 'L\'IA a un moment de faiblesse. Réessayez dans quelques secondes.',
+    load_error: 'Échec du chargement. Veuillez actualiser.',
+    privacy: 'Confidentialité', about: 'À propos',
+    disclaimer_footer: 'Uniquement pour le divertissement. Pas de paris réels, pas d\'argent réel.',
+    share_title: 'Prédiction Coupe du Monde 2026',
+    share_brand: 'Prophéties footballistiques par IA',
+    prompt_persona: 'Tu es "Prophet AI", un consultant football brutalement honnête, drôle et légèrement déjanté qui prédit les matchs de la Coupe du Monde 2026. Ta personnalité : un mélange de la rage de Gary Neville, le mépris de Roy Keane et un troll de Twitter. Tu parles en paragraphes courts et percutants. Réponds en français.',
+    prompt_format: 'Réponds EXACTEMENT dans ce format (garde les labels) :\nVERDICT: [2-3 phrases qui clouent la prédiction de l\'utilisateur et donnent ta propre prédiction avec raisonnement. Sois drôle, utilise des mêmes foot, référence des joueurs réels si pertinent. Pas de termes de paris.]\n\nQUOTE: [Une punchline iconique sous 120 caractères que l\'utilisateur peut tweeter. Cinglante mais adaptée à toute la famille.]\n\nGarde-le divertissant. C\'est purement pour le fun, pas du jeu d\'argent.',
+    fallback_quote: 'Prédiction audacieuse. Probablement fausse.',
+    copy_template: (h,hs,a,as,q) => `🔮 Ma prédiction Coupe du Monde 2026 :\n${h} ${hs} - ${as} ${a}\n\n💬 "${q}"\n\nGénéré par MatchProphet`
+  },
+  de: {
+    nav_predict: 'Vorhersagen', nav_about: 'Über',
+    hero_title: 'Die KI sieht die Zukunft.<br><span class="text-transparent bg-clip-text accent-gradient">Und sie verbrennt dich.</span>',
+    hero_subtitle: 'Wähle ein WM 2026-Spiel. Gib deine Vorhersage ein. Lass unseren KI-Experten dir sagen, warum du falsch liegst.',
+    select_match: 'Spiel auswählen', loading: 'Spiele werden geladen...',
+    home: 'Heim', away: 'Auswärts',
+    predict_btn: '🔮 Lass die KI mich verbrennen',
+    thinking: '🧠 Der Prophet denkt nach...',
+    powered_by: 'Unterstützt von Gemini AI · Nur zur Unterhaltung',
+    ai_subtitle: 'Zertifizierter Ball-Wissen-Haber',
+    card_title: 'Deine Prophezeiungs-Karte',
+    card_subtitle: 'Herunterladen und teilen, um die Fußballgötter zu beschwören',
+    download: '⬇️ Herunterladen', copy: '📋 Text kopieren',
+    copied: 'In die Zwischenablage kopiert!',
+    ai_error: 'Die KI hat einen Moment. Versuche es in wenigen Sekunden erneut.',
+    load_error: 'Laden fehlgeschlagen. Bitte aktualisieren.',
+    privacy: 'Datenschutz', about: 'Über',
+    disclaimer_footer: 'Nur zur Unterhaltung. Keine echten Wetten, kein echtes Geld.',
+    share_title: 'WM 2026 Vorhersage',
+    share_brand: 'KI-gestützte Fußball-Prophezeiungen',
+    prompt_persona: 'Du bist "Prophet AI", ein brutal ehrlicher, lustiger und leicht verrückter Fußballexperte, der WM 2026-Spiele vorhersagt. Deine Persönlichkeit: eine Mischung aus Gary Nevilles Wut, Roy Keanes Verachtung und einem Twitter-Shitposter. Du sprichst in kurzen, prägnanten Absätzen. Antworte auf Deutsch.',
+    prompt_format: 'Antworte EXAKT in diesem Format (behalte die Labels bei):\nVERDICT: [2-3 Sätze, die die Vorhersage des Nutzers verbrennen und deine eigene Vorhersage mit Begründung geben. Sei lustig, nutze Fußball-Memes, erwähne echte Spieler wenn relevant. Keine Wettbegriffe.]\n\nQUOTE: [Eine ikonische Punchline unter 120 Zeichen, die der Nutzer tweeten kann. Bissig aber familienfreundlich.]\n\nBleib unterhaltsam. Das ist rein zum Spaß, kein Glücksspiel.',
+    fallback_quote: 'Kühne Vorhersage. Wahrscheinlich falsch.',
+    copy_template: (h,hs,a,as,q) => `🔮 Meine WM 2026 Vorhersage:\n${h} ${hs} - ${as} ${a}\n\n💬 "${q}"\n\nErstellt von MatchProphet`
+  },
+  es: {
+    nav_predict: 'Predecir', nav_about: 'Acerca de',
+    hero_title: 'La IA ve el futuro.<br><span class="text-transparent bg-clip-text accent-gradient">Y te quema.</span>',
+    hero_subtitle: 'Elige un partido del Mundial 2026. Introduce tu predicción. Deja que nuestro experto de IA te diga por qué estás equivocado.',
+    select_match: 'Seleccionar Partido', loading: 'Cargando partidos...',
+    home: 'Local', away: 'Visitante',
+    predict_btn: '🔮 Deja que la IA me queme',
+    thinking: '🧠 El Profeta está pensando...',
+    powered_by: 'Impulsado por Gemini AI · Solo para entretenimiento',
+    ai_subtitle: 'Conocedor Certificado de Balón',
+    card_title: 'Tu Carta de Profecía',
+    card_subtitle: 'Descarga y comparte para invocar a los dioses del fútbol',
+    download: '⬇️ Descargar', copy: '📋 Copiar texto',
+    copied: '¡Copiado al portapapeles!',
+    ai_error: 'La IA está teniendo un momento. Inténtalo de nuevo en unos segundos.',
+    load_error: 'Error al cargar. Por favor, actualiza.',
+    privacy: 'Privacidad', about: 'Acerca de',
+    disclaimer_footer: 'Solo para entretenimiento. Sin apuestas reales, sin dinero real.',
+    share_title: 'Predicción Mundial 2026',
+    share_brand: 'Profecías futbolísticas por IA',
+    prompt_persona: 'Eres "Prophet AI", un experto de fútbol brutalmente honesto, divertido y ligeramente desquiciado que predice partidos del Mundial 2026. Tu personalidad: una combinación de la furia de Gary Neville, el desdén de Roy Keane y un shitposter de Twitter. Hablas en párrafos cortos y contundentes. Responde en español.',
+    prompt_format: 'Responde EXACTAMENTE en este formato (mantén las etiquetas):\nVERDICT: [2-3 oraciones quemando la predicción del usuario y dando tu propia predicción con razonamiento. Sé divertido, usa memes de fútbol, referencia jugadores reales si es relevante. Sin términos de apuestas.]\n\nQUOTE: [Una punchline icónica bajo 120 caracteres que el usuario pueda twittear. Feroz pero apta para toda la familia.]\n\nManténlo entretenido. Esto es puramente por diversión, no juego de azar.',
+    fallback_quote: 'Predicción audaz. Probablemente incorrecta.',
+    copy_template: (h,hs,a,as,q) => `🔮 Mi predicción del Mundial 2026:\n${h} ${hs} - ${as} ${a}\n\n💬 "${q}"\n\nGenerado por MatchProphet`
+  },
+  pt: {
+    nav_predict: 'Prever', nav_about: 'Sobre',
+    hero_title: 'A IA vê o futuro.<br><span class="text-transparent bg-clip-text accent-gradient">E te queima.</span>',
+    hero_subtitle: 'Escolha uma partida da Copa do Mundo 2026. Insira sua previsão. Deixe nosso especialista de IA te dizer por que você está errado.',
+    select_match: 'Selecionar Partida', loading: 'Carregando partidas...',
+    home: 'Casa', away: 'Fora',
+    predict_btn: '🔮 Deixa a IA me queimar',
+    thinking: '🧠 O Profeta está pensando...',
+    powered_by: 'Powered by Gemini AI · Apenas para entretenimento',
+    ai_subtitle: 'Conhecedor Certificado de Bola',
+    card_title: 'Seu Cartão de Profecia',
+    card_subtitle: 'Baixe e compartilhe para invocar os deuses do futebol',
+    download: '⬇️ Baixar', copy: '📋 Copiar texto',
+    copied: 'Copiado para a área de transferência!',
+    ai_error: 'A IA está tendo um momento. Tente novamente em alguns segundos.',
+    load_error: 'Falha ao carregar. Por favor, atualize.',
+    privacy: 'Privacidade', about: 'Sobre',
+    disclaimer_footer: 'Apenas para entretenimento. Sem apostas reais, sem dinheiro real.',
+    share_title: 'Previsão Copa do Mundo 2026',
+    share_brand: 'Profecias de futebol por IA',
+    prompt_persona: 'Você é "Prophet AI", um especialista de futebol brutalmente honesto, engraçado e levemente desequilibrado que prevê partidas da Copa do Mundo 2026. Sua personalidade: uma combinação da raiva de Gary Neville, o desdém de Roy Keane e um shitposter do Twitter. Você fala em parágrafos curtos e impactantes. Responda em português.',
+    prompt_format: 'Responda EXATAMENTE neste formato (mantenha os rótulos):\nVERDICT: [2-3 frases queimando a previsão do usuário e dando sua própria previsão com raciocínio. Seja engraçado, use memes de futebol, referencie jogadores reais se relevante. Sem termos de apostas.]\n\nQUOTE: [Uma punchline icônica abaixo de 120 caracteres que o usuário possa twittar. Feroz mas adequada para toda a família.]\n\nMantenha-o divertido. Isso é puramente por diversão, não jogo de azar.',
+    fallback_quote: 'Previsão ousada. Provavelmente errada.',
+    copy_template: (h,hs,a,as,q) => `🔮 Minha previsão da Copa do Mundo 2026:\n${h} ${hs} - ${as} ${a}\n\n💬 "${q}"\n\nGerado por MatchProphet`
+  }
+};
+
+let currentLang = localStorage.getItem('mp_lang') || 'en';
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('mp_lang', lang);
+  document.documentElement.lang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === lang);
+  });
+  applyI18n();
+  if (selectedMatch) {
+    const btn = document.getElementById('predict-btn');
+    if (!btn.disabled) btn.textContent = I18N[currentLang].predict_btn;
+  }
+}
+
+function t(key) {
+  return I18N[currentLang]?.[key] ?? I18N.en[key] ?? key;
+}
+
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (I18N[currentLang][key] !== undefined) {
+      el.textContent = I18N[currentLang][key];
+    }
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const key = el.dataset.i18nHtml;
+    if (I18N[currentLang][key] !== undefined) {
+      el.innerHTML = I18N[currentLang][key];
+    }
+  });
+}
+
 // ====== CONFIG ======
-const GEMINI_API_KEY = 'AIzaSyAuqlhaJfTOEY-cnEJ5QLuaS0aon3QaL_E';
+const GEMINI_API_KEY='***';
 const GEMINI_MODEL = 'gemini-3.5-flash';
 
 // ====== FLAG HELPER ======
@@ -148,7 +350,7 @@ async function loadMatches() {
     renderMatches();
   } catch(e) {
     document.getElementById('match-list').innerHTML =
-      '<div class="text-center py-8 text-red-400">Failed to load matches. Please refresh.</div>';
+      `<div class="text-center py-8 text-red-400">${t('load_error')}</div>`;
     console.error(e);
   }
 }
@@ -196,20 +398,12 @@ async function callGemini(prompt) {
   });
   if (!res.ok) throw new Error('AI API error: '+res.status);
   const data = await res.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || 'The AI prophet is napping. Try again.';
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || t('ai_error');
 }
 
 function buildPrompt(match, homeScore, awayScore) {
-  return `You are "Prophet AI", a brutally honest, funny, and slightly unhinged football pundit who predicts World Cup 2026 matches. Your personality: think combining Gary Neville's rage, Roy Keane's disdain, and a Twitter shitposter. You speak in short punchy paragraphs.
-
-The user predicted: ${match.home} ${homeScore} - ${awayScore} ${match.away}
-
-Respond in EXACTLY this format (keep the labels):
-VERDICT: [2-3 sentences roasting the user's prediction and giving your own prediction with reasoning. Be funny, use football memes, reference real players if relevant. No betting terms.]
-
-QUOTE: [One iconic punchline under 120 characters that the user can tweet. Make it savage but family-friendly.]
-
-Keep it entertaining. This is purely for fun, not gambling.`;
+  const L = I18N[currentLang];
+  return `${L.prompt_persona}\n\nThe user predicted: ${match.home} ${homeScore} - ${awayScore} ${match.away}\n\n${L.prompt_format}`;
 }
 
 document.getElementById('predict-btn').addEventListener('click', async () => {
@@ -217,11 +411,11 @@ document.getElementById('predict-btn').addEventListener('click', async () => {
   const homeScore = document.getElementById('home-score').value;
   const awayScore = document.getElementById('away-score').value;
   btn.disabled = true;
-  btn.textContent = '🧠 The Prophet is thinking...';
+  btn.textContent = t('thinking');
   try {
     const raw = await callGemini(buildPrompt(selectedMatch, homeScore, awayScore));
     const verdict = raw.match(/VERDICT:\s*([\s\S]*?)(?=QUOTE:|$)/)?.[1]?.trim() || raw;
-    const quote = raw.match(/QUOTE:\s*(.*)/)?.[1]?.trim() || 'Bold prediction. Probably wrong.';
+    const quote = raw.match(/QUOTE:\s*(.*)/)?.[1]?.trim() || t('fallback_quote');
     aiResult = {verdict, quote, homeScore, awayScore};
     document.getElementById('ai-text').textContent = verdict;
     document.getElementById('ai-quote').textContent = '"' + quote + '"';
@@ -230,11 +424,11 @@ document.getElementById('predict-btn').addEventListener('click', async () => {
     renderShareCard();
     window.scrollTo({top: document.getElementById('result-section').offsetTop - 80, behavior:'smooth'});
   } catch(e) {
-    alert('AI is having a moment. Try again in a few seconds.');
+    alert(t('ai_error'));
     console.error(e);
   } finally {
     btn.disabled = false;
-    btn.textContent = '🔮 Let the AI Roast Me';
+    btn.textContent = t('predict_btn');
   }
 });
 
@@ -243,6 +437,7 @@ function renderShareCard() {
   const c = document.getElementById('share-canvas');
   const ctx = c.getContext('2d');
   const w = c.width, h = c.height;
+  const L = I18N[currentLang];
 
   const grd = ctx.createLinearGradient(0,0,0,h);
   grd.addColorStop(0,'#1e293b');
@@ -258,7 +453,7 @@ function renderShareCard() {
   ctx.fillText('MatchProphet', 60, 240);
   ctx.fillStyle = '#94a3b8';
   ctx.font = '36px Inter, sans-serif';
-  ctx.fillText('World Cup 2026 Prediction', 60, 300);
+  ctx.fillText(L.share_title, 60, 300);
 
   ctx.font = 'bold 80px Inter, sans-serif';
   ctx.fillStyle = '#f8fafc';
@@ -297,7 +492,7 @@ function renderShareCard() {
   ctx.fillStyle = '#64748b';
   ctx.font = '36px Inter, sans-serif';
   ctx.fillText('matchprophet.fun', w/2, 1750);
-  ctx.fillText('🔮 AI-powered football prophecies', w/2, 1810);
+  ctx.fillText(`🔮 ${L.share_brand}`, w/2, 1810);
 
   ctx.textAlign = 'left';
 }
@@ -310,11 +505,15 @@ document.getElementById('download-btn').addEventListener('click', () => {
 });
 
 document.getElementById('copy-text-btn').addEventListener('click', () => {
-  const text = `🔮 My World Cup 2026 Prediction:\n${selectedMatch.home} ${aiResult.homeScore} - ${aiResult.awayScore} ${selectedMatch.away}\n\n💬 "${aiResult.quote}"\n\nGenerated by MatchProphet`;
-  navigator.clipboard.writeText(text).then(() => alert('Copied to clipboard!'));
+  const text = I18N[currentLang].copy_template(
+    selectedMatch.home, aiResult.homeScore,
+    selectedMatch.away, aiResult.awayScore, aiResult.quote
+  );
+  navigator.clipboard.writeText(text).then(() => alert(t('copied')));
 });
 
 // ====== INIT ======
+setLang(currentLang);
 loadMatches();
 </script>
 
