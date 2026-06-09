@@ -296,9 +296,15 @@ function setLang(lang) {
     b.classList.toggle('active', b.dataset.lang === lang);
   });
   applyI18n();
+  renderMatches();
   if (selectedMatch) {
+    document.getElementById('home-name').textContent = localizeTeam(selectedMatch.home);
+    document.getElementById('away-name').textContent = localizeTeam(selectedMatch.away);
     const btn = document.getElementById('predict-btn');
     if (!btn.disabled) btn.textContent = I18N[currentLang].predict_btn;
+    if (!document.getElementById('share-section').classList.contains('hidden')) {
+      renderShareCard();
+    }
   }
 }
 
@@ -332,15 +338,20 @@ function codeToFlag(code) {
   return String.fromCodePoint(base + code.charCodeAt(0) - 65, base + code.charCodeAt(1) - 65);
 }
 
-// ====== LOAD MATCHES ======
+// ====== LOAD MATCHES & TEAMS ======
 let matches = [];
+let teamNames = {};
 let selectedMatch = null;
 let aiResult = null;
 
-async function loadMatches() {
+async function loadData() {
   try {
-    const res = await fetch('matches.json');
-    const data = await res.json();
+    const [matchesRes, teamsRes] = await Promise.all([
+      fetch('matches.json'),
+      fetch('teams.json')
+    ]);
+    const data = await matchesRes.json();
+    teamNames = await teamsRes.json();
     matches = data.map(m => ({
       ...m,
       homeFlag: codeToFlag(m.homeCode),
@@ -354,6 +365,11 @@ async function loadMatches() {
   }
 }
 
+function localizeTeam(name) {
+  if (currentLang === 'en' || !teamNames[name]) return name;
+  return teamNames[name][currentLang] || name;
+}
+
 // ====== RENDER MATCH LIST ======
 function renderMatches() {
   const container = document.getElementById('match-list');
@@ -364,9 +380,9 @@ function renderMatches() {
         <span class="text-sm text-slate-400">${m.date}</span>
       </div>
       <div class="flex items-center gap-3">
-        <span class="flex items-center gap-1"><span class="flag text-xl">${m.homeFlag}</span><span class="font-semibold hidden sm:inline">${m.home}</span></span>
+        <span class="flex items-center gap-1"><span class="flag text-xl">${m.homeFlag}</span><span class="font-semibold hidden sm:inline">${localizeTeam(m.home)}</span></span>
         <span class="text-slate-500 font-bold">vs</span>
-        <span class="flex items-center gap-1"><span class="font-semibold hidden sm:inline">${m.away}</span><span class="flag text-xl">${m.awayFlag}</span></span>
+        <span class="flex items-center gap-1"><span class="font-semibold hidden sm:inline">${localizeTeam(m.away)}</span><span class="flag text-xl">${m.awayFlag}</span></span>
       </div>
     </button>
   `).join('');
@@ -375,9 +391,9 @@ function renderMatches() {
 function selectMatch(id) {
   selectedMatch = matches.find(m => m.id === id);
   document.getElementById('home-flag').textContent = selectedMatch.homeFlag;
-  document.getElementById('home-name').textContent = selectedMatch.home;
+  document.getElementById('home-name').textContent = localizeTeam(selectedMatch.home);
   document.getElementById('away-flag').textContent = selectedMatch.awayFlag;
-  document.getElementById('away-name').textContent = selectedMatch.away;
+  document.getElementById('away-name').textContent = localizeTeam(selectedMatch.away);
   document.getElementById('match-section').classList.add('hidden');
   document.getElementById('prediction-section').classList.remove('hidden');
   document.getElementById('result-section').classList.add('hidden');
@@ -447,13 +463,13 @@ function renderShareCard() {
   ctx.font = 'bold 80px Inter, sans-serif';
   ctx.fillStyle = '#f8fafc';
   ctx.textAlign = 'center';
-  ctx.fillText(`${selectedMatch.homeFlag}  ${selectedMatch.home}`, w/2, 520);
+  ctx.fillText(`${selectedMatch.homeFlag}  ${localizeTeam(selectedMatch.home)}`, w/2, 520);
   ctx.fillStyle = '#f59e0b';
   ctx.font = 'bold 120px Inter, sans-serif';
   ctx.fillText(`${aiResult.homeScore}  -  ${aiResult.awayScore}`, w/2, 700);
   ctx.fillStyle = '#f8fafc';
   ctx.font = 'bold 80px Inter, sans-serif';
-  ctx.fillText(`${selectedMatch.away}  ${selectedMatch.awayFlag}`, w/2, 880);
+  ctx.fillText(`${localizeTeam(selectedMatch.away)}  ${selectedMatch.awayFlag}`, w/2, 880);
 
   ctx.strokeStyle = '#334155';
   ctx.lineWidth = 4;
@@ -503,7 +519,7 @@ document.getElementById('copy-text-btn').addEventListener('click', () => {
 
 // ====== INIT ======
 setLang(currentLang);
-loadMatches();
+loadData();
 </script>
 
 </body>

@@ -1,0 +1,338 @@
+{
+  "Mexico": {
+    "zh": "墨西哥",
+    "fr": "Mexique",
+    "de": "Mexiko",
+    "es": "México",
+    "pt": "México"
+  },
+  "South Africa": {
+    "zh": "南非",
+    "fr": "Afrique du Sud",
+    "de": "Südafrika",
+    "es": "Sudáfrica",
+    "pt": "África do Sul"
+  },
+  "South Korea": {
+    "zh": "韩国",
+    "fr": "Corée du Sud",
+    "de": "Südkorea",
+    "es": "Corea del Sur",
+    "pt": "Coreia do Sul"
+  },
+  "Czechia": {
+    "zh": "捷克",
+    "fr": "Tchéquie",
+    "de": "Tschechien",
+    "es": "Chequia",
+    "pt": "Chéquia"
+  },
+  "Canada": {
+    "zh": "加拿大",
+    "fr": "Canada",
+    "de": "Kanada",
+    "es": "Canadá",
+    "pt": "Canadá"
+  },
+  "Bosnia and Herzegovina": {
+    "zh": "波斯尼亚",
+    "fr": "Bosnie-Herzégovine",
+    "de": "Bosnien und Herzegowina",
+    "es": "Bosnia y Herzegovina",
+    "pt": "Bósnia e Herzegovina"
+  },
+  "Qatar": {
+    "zh": "卡塔尔",
+    "fr": "Qatar",
+    "de": "Katar",
+    "es": "Catar",
+    "pt": "Catar"
+  },
+  "Switzerland": {
+    "zh": "瑞士",
+    "fr": "Suisse",
+    "de": "Schweiz",
+    "es": "Suiza",
+    "pt": "Suíça"
+  },
+  "Brazil": {
+    "zh": "巴西",
+    "fr": "Brésil",
+    "de": "Brasilien",
+    "es": "Brasil",
+    "pt": "Brasil"
+  },
+  "Morocco": {
+    "zh": "摩洛哥",
+    "fr": "Maroc",
+    "de": "Marokko",
+    "es": "Marruecos",
+    "pt": "Marrocos"
+  },
+  "Haiti": {
+    "zh": "海地",
+    "fr": "Haïti",
+    "de": "Haiti",
+    "es": "Haití",
+    "pt": "Haiti"
+  },
+  "Scotland": {
+    "zh": "苏格兰",
+    "fr": "Écosse",
+    "de": "Schottland",
+    "es": "Escocia",
+    "pt": "Escócia"
+  },
+  "United States": {
+    "zh": "美国",
+    "fr": "États-Unis",
+    "de": "USA",
+    "es": "Estados Unidos",
+    "pt": "Estados Unidos"
+  },
+  "Paraguay": {
+    "zh": "巴拉圭",
+    "fr": "Paraguay",
+    "de": "Paraguay",
+    "es": "Paraguay",
+    "pt": "Paraguai"
+  },
+  "Australia": {
+    "zh": "澳大利亚",
+    "fr": "Australie",
+    "de": "Australien",
+    "es": "Australia",
+    "pt": "Austrália"
+  },
+  "Turkey": {
+    "zh": "土耳其",
+    "fr": "Turquie",
+    "de": "Türkei",
+    "es": "Turquía",
+    "pt": "Turquia"
+  },
+  "Germany": {
+    "zh": "德国",
+    "fr": "Allemagne",
+    "de": "Deutschland",
+    "es": "Alemania",
+    "pt": "Alemanha"
+  },
+  "Curacao": {
+    "zh": "库拉索",
+    "fr": "Curaçao",
+    "de": "Curaçao",
+    "es": "Curazao",
+    "pt": "Curaçao"
+  },
+  "Ivory Coast": {
+    "zh": "科特迪瓦",
+    "fr": "Côte d'Ivoire",
+    "de": "Elfenbeinküste",
+    "es": "Costa de Marfil",
+    "pt": "Costa do Marfim"
+  },
+  "Ecuador": {
+    "zh": "厄瓜多尔",
+    "fr": "Équateur",
+    "de": "Ecuador",
+    "es": "Ecuador",
+    "pt": "Equador"
+  },
+  "Netherlands": {
+    "zh": "荷兰",
+    "fr": "Pays-Bas",
+    "de": "Niederlande",
+    "es": "Países Bajos",
+    "pt": "Países Baixos"
+  },
+  "Japan": {
+    "zh": "日本",
+    "fr": "Japon",
+    "de": "Japan",
+    "es": "Japón",
+    "pt": "Japão"
+  },
+  "Sweden": {
+    "zh": "瑞典",
+    "fr": "Suède",
+    "de": "Schweden",
+    "es": "Suecia",
+    "pt": "Suécia"
+  },
+  "Tunisia": {
+    "zh": "突尼斯",
+    "fr": "Tunisie",
+    "de": "Tunesien",
+    "es": "Túnez",
+    "pt": "Tunísia"
+  },
+  "Belgium": {
+    "zh": "比利时",
+    "fr": "Belgique",
+    "de": "Belgien",
+    "es": "Bélgica",
+    "pt": "Bélgica"
+  },
+  "Egypt": {
+    "zh": "埃及",
+    "fr": "Égypte",
+    "de": "Ägypten",
+    "es": "Egipto",
+    "pt": "Egito"
+  },
+  "Iran": {
+    "zh": "伊朗",
+    "fr": "Iran",
+    "de": "Iran",
+    "es": "Irán",
+    "pt": "Irã"
+  },
+  "New Zealand": {
+    "zh": "新西兰",
+    "fr": "Nouvelle-Zélande",
+    "de": "Neuseeland",
+    "es": "Nueva Zelanda",
+    "pt": "Nova Zelândia"
+  },
+  "Spain": {
+    "zh": "西班牙",
+    "fr": "Espagne",
+    "de": "Spanien",
+    "es": "España",
+    "pt": "Espanha"
+  },
+  "Cape Verde": {
+    "zh": "佛得角",
+    "fr": "Cap-Vert",
+    "de": "Kap Verde",
+    "es": "Cabo Verde",
+    "pt": "Cabo Verde"
+  },
+  "Saudi Arabia": {
+    "zh": "沙特阿拉伯",
+    "fr": "Arabie saoudite",
+    "de": "Saudi-Arabien",
+    "es": "Arabia Saudita",
+    "pt": "Arábia Saudita"
+  },
+  "Uruguay": {
+    "zh": "乌拉圭",
+    "fr": "Uruguay",
+    "de": "Uruguay",
+    "es": "Uruguay",
+    "pt": "Uruguai"
+  },
+  "France": {
+    "zh": "法国",
+    "fr": "France",
+    "de": "Frankreich",
+    "es": "Francia",
+    "pt": "França"
+  },
+  "Senegal": {
+    "zh": "塞内加尔",
+    "fr": "Sénégal",
+    "de": "Senegal",
+    "es": "Senegal",
+    "pt": "Senegal"
+  },
+  "Iraq": {
+    "zh": "伊拉克",
+    "fr": "Irak",
+    "de": "Irak",
+    "es": "Irak",
+    "pt": "Iraque"
+  },
+  "Norway": {
+    "zh": "挪威",
+    "fr": "Norvège",
+    "de": "Norwegen",
+    "es": "Noruega",
+    "pt": "Noruega"
+  },
+  "Argentina": {
+    "zh": "阿根廷",
+    "fr": "Argentine",
+    "de": "Argentinien",
+    "es": "Argentina",
+    "pt": "Argentina"
+  },
+  "Algeria": {
+    "zh": "阿尔及利亚",
+    "fr": "Algérie",
+    "de": "Algerien",
+    "es": "Argelia",
+    "pt": "Argélia"
+  },
+  "Austria": {
+    "zh": "奥地利",
+    "fr": "Autriche",
+    "de": "Österreich",
+    "es": "Austria",
+    "pt": "Áustria"
+  },
+  "Jordan": {
+    "zh": "约旦",
+    "fr": "Jordanie",
+    "de": "Jordanien",
+    "es": "Jordania",
+    "pt": "Jordânia"
+  },
+  "Portugal": {
+    "zh": "葡萄牙",
+    "fr": "Portugal",
+    "de": "Portugal",
+    "es": "Portugal",
+    "pt": "Portugal"
+  },
+  "DR Congo": {
+    "zh": "刚果金",
+    "fr": "RD Congo",
+    "de": "DR Kongo",
+    "es": "RDC",
+    "pt": "RD Congo"
+  },
+  "Uzbekistan": {
+    "zh": "乌兹别克斯坦",
+    "fr": "Ouzbékistan",
+    "de": "Usbekistan",
+    "es": "Uzbekistán",
+    "pt": "Uzbequistão"
+  },
+  "Colombia": {
+    "zh": "哥伦比亚",
+    "fr": "Colombie",
+    "de": "Kolumbien",
+    "es": "Colombia",
+    "pt": "Colômbia"
+  },
+  "England": {
+    "zh": "英格兰",
+    "fr": "Angleterre",
+    "de": "England",
+    "es": "Inglaterra",
+    "pt": "Inglaterra"
+  },
+  "Croatia": {
+    "zh": "克罗地亚",
+    "fr": "Croatie",
+    "de": "Kroatien",
+    "es": "Croacia",
+    "pt": "Croácia"
+  },
+  "Ghana": {
+    "zh": "加纳",
+    "fr": "Ghana",
+    "de": "Ghana",
+    "es": "Ghana",
+    "pt": "Gana"
+  },
+  "Panama": {
+    "zh": "巴拿马",
+    "fr": "Panama",
+    "de": "Panama",
+    "es": "Panamá",
+    "pt": "Panamá"
+  }
+}
