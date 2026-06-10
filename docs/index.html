@@ -690,7 +690,12 @@ function goBackToMatch() {
   // Update nav highlight
   document.querySelectorAll('nav a').forEach(a => a.classList.remove('text-amber-400','font-semibold'));
   document.querySelector('nav a[href="index.html"]').classList.add('text-amber-400','font-semibold');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Wait for layout reflow then scroll to top
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
 }
 
 function clearHistory() {
