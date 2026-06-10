@@ -8,5 +8,8 @@
   },
   "compatibility_flags": [
     "nodejs_compat"
+  ],
+  "routes": [
+    { "pattern": "api.matchprophet.fun", "custom_domain": true }
   ]
 }
