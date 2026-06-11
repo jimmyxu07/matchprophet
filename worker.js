@@ -195,37 +195,37 @@ export default {
 
 async function updateResults(env) {
   let results = [];
-  let source = 'api-football';
+  let source = 'football-data';
 
   try {
-    const res = await fetch('https://v3.football.api-sports.io/fixtures?league=1&season=2026&status=FT', {
+    const res = await fetch('https://api.football-data.org/v4/competitions/WC/matches?status=FINISHED', {
       method: 'GET',
       headers: {
-        'x-apisports-key': env.API_SPORTS_KEY
+        'X-Auth-Token': env.API_SPORTS_KEY
       }
     });
 
     if (!res.ok) {
-      throw new Error(`API-Football HTTP ${res.status}`);
+      throw new Error(`football-data.org HTTP ${res.status}`);
     }
 
     const data = await res.json();
 
-    if (!data.response || !Array.isArray(data.response)) {
-      throw new Error('Unexpected API-Football response structure');
+    if (!data.matches || !Array.isArray(data.matches)) {
+      throw new Error('Unexpected football-data.org response structure');
     }
 
-    results = data.response.map(fixture => ({
-      home: fixture.teams?.home?.name || 'Unknown',
-      away: fixture.teams?.away?.name || 'Unknown',
-      homeScore: fixture.goals?.home ?? null,
-      awayScore: fixture.goals?.away ?? null,
-      status: fixture.fixture?.status?.short || 'FT'
+    results = data.matches.map(m => ({
+      home: m.homeTeam?.name || 'Unknown',
+      away: m.awayTeam?.name || 'Unknown',
+      homeScore: m.score?.fullTime?.home ?? null,
+      awayScore: m.score?.fullTime?.away ?? null,
+      status: m.status || 'FINISHED'
     }));
 
-    console.log(`API-Football: fetched ${results.length} finished matches`);
+    console.log(`football-data.org: fetched ${results.length} finished matches`);
   } catch (primaryErr) {
-    console.error('API-Football failed:', primaryErr);
+    console.error('football-data.org failed:', primaryErr);
 
     // Fallback to openfootball JSON
     try {
