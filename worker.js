@@ -71,6 +71,39 @@ export default {
       return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405, headers: corsHeaders });
     }
 
+    // POST /api/admin/update-result — manual score update (admin only)
+    if (url.pathname === '/api/admin/update-result') {
+      if (request.method !== 'POST') {
+        return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405, headers: corsHeaders });
+      }
+      const authHeader = request.headers.get('Authorization') || '';
+      const token = authHeader.replace('Bearer ', '');
+      if (!env.ADMIN_TOKEN || token !== env.ADMIN_TOKEN) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: corsHeaders });
+      }
+      try {
+        const updateBody = await request.json();
+        const { home, away, homeScore, awayScore, status = 'FINISHED', matchDate } = updateBody;
+        if (!home || !away || homeScore === undefined || awayScore === undefined) {
+          return new Response(JSON.stringify({ error: 'Missing required fields: home, away, homeScore, awayScore' }), { status: 400, headers: corsHeaders });
+        }
+        const existing = await env.KV.get('wc_results', { type: 'json' }) || { results: [], updatedAt: null, source: 'manual' };
+        const idx = existing.results.findIndex(r => r.home === home && r.away === away);
+        const newResult = { home, away, homeScore: Number(homeScore), awayScore: Number(awayScore), status, matchDate: matchDate || new Date().toISOString() };
+        if (idx >= 0) {
+          existing.results[idx] = newResult;
+        } else {
+          existing.results.push(newResult);
+        }
+        existing.updatedAt = Date.now();
+        existing.source = 'manual';
+        await env.KV.put('wc_results', JSON.stringify(existing));
+        return new Response(JSON.stringify({ success: true, result: newResult, total: existing.results.length }), { headers: corsHeaders });
+      } catch (e) {
+        return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: corsHeaders });
+      }
+    }
+
     if (request.method !== 'POST') {
       return new Response(JSON.stringify({ error: 'Method not allowed' }), {
         status: 405, headers: corsHeaders
