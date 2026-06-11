@@ -40,49 +40,62 @@ export default {
   async fetch(request, env) {
     console.log('Worker received:', request.method, request.url);
     const url = new URL(request.url);
-    
+
     // Only handle API requests at /api path
     if (!url.pathname.startsWith('/api')) {
       return new Response('Not Found', { status: 404 });
     }
-    
+
     // CORS
     const corsHeaders = {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
       'Content-Type': 'application/json'
     };
-    
+
     if (request.method === 'OPTIONS') {
       return new Response(null, { headers: corsHeaders });
     }
-    
+
+    // GET /api/results — return cached actual scores
+    if (url.pathname === '/api/results' || url.pathname === '/api/results/') {
+      if (request.method === 'GET') {
+        try {
+          const data = await env.KV.get('wc_results', { type: 'json' }) || { results: [], updatedAt: null };
+          return new Response(JSON.stringify(data), { headers: corsHeaders });
+        } catch (e) {
+          return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: corsHeaders });
+        }
+      }
+      return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405, headers: corsHeaders });
+    }
+
     if (request.method !== 'POST') {
-      return new Response(JSON.stringify({ error: 'Method not allowed' }), { 
-        status: 405, headers: corsHeaders 
+      return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+        status: 405, headers: corsHeaders
       });
     }
-    
+
     let body;
     try {
       body = await request.json();
     } catch {
-      return new Response(JSON.stringify({ error: 'Invalid JSON' }), { 
-        status: 400, headers: corsHeaders 
+      return new Response(JSON.stringify({ error: 'Invalid JSON' }), {
+        status: 400, headers: corsHeaders
       });
     }
-    
+
     const { match, homeScore, awayScore, lang = 'en' } = body;
     if (!match || homeScore === undefined || awayScore === undefined) {
-      return new Response(JSON.stringify({ error: 'Missing required fields' }), { 
-        status: 400, headers: corsHeaders 
+      return new Response(JSON.stringify({ error: 'Missing required fields' }), {
+        status: 400, headers: corsHeaders
       });
     }
-    
+
     const p = PROMPTS[lang] || PROMPTS.en;
     const prompt = `The user predicted: ${match.home} ${homeScore} - ${awayScore} ${match.away}\n\n${p.instruction}`;
-    
+
     try {
       const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${env.GEMINI_API_KEY}`, {
         method: 'POST',
@@ -93,24 +106,24 @@ export default {
           generationConfig: { temperature: 0.9, maxOutputTokens: 512 }
         })
       });
-      
+
       if (!res.ok) {
         const err = await res.text();
-        return new Response(JSON.stringify({ error: 'Gemini API error', details: err }), { 
-          status: 502, headers: corsHeaders 
+        return new Response(JSON.stringify({ error: 'Gemini API error', details: err }), {
+          status: 502, headers: corsHeaders
         });
       }
-      
+
       const data = await res.json();
       const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-      
+
       // Parse with flexible regex (case-insensitive, allows markdown bold)
       const verdictMatch = text.match(/\*?\*?VERDICT\*?\*?[\s:：]+([\s\S]*?)(?=\*?\*?QUOTE\*?\*?[\s:：]|$)/i);
       const quoteMatch = text.match(/\*?\*?QUOTE\*?\*?[\s:：]+(.+)/i);
-      
+
       let verdict = verdictMatch ? verdictMatch[1].trim() : text.trim();
       let quote = quoteMatch ? quoteMatch[1].trim() : '';
-      
+
       // Heuristic fallback: if no quote, try last line/sentence/phrase
       if (!quote && verdict) {
         const lines = verdict.split(/\n/).filter(l => l.trim());
@@ -144,20 +157,108 @@ export default {
           }
         }
       }
-      
+
       if (!quote) quote = p.fallback;
       if (!verdict) verdict = p.fallback;
-      
+
+      // Try to extract AI's own predicted score (last X-Y pattern in text)
+      let aiHomeScore = null;
+      let aiAwayScore = null;
+      const scoreMatches = [...text.matchAll(/(\d+)\s*-\s*(\d+)/g)];
+      if (scoreMatches.length > 0) {
+        // Take the last match as AI's own prediction (user's score is usually mentioned first)
+        const last = scoreMatches[scoreMatches.length - 1];
+        aiHomeScore = parseInt(last[1], 10);
+        aiAwayScore = parseInt(last[2], 10);
+      }
+
       return new Response(JSON.stringify({
         verdict,
         quote,
+        aiHomeScore,
+        aiAwayScore,
         raw: text
       }), { headers: corsHeaders });
-      
+
     } catch (e) {
-      return new Response(JSON.stringify({ error: e.message }), { 
-        status: 500, headers: corsHeaders 
+      return new Response(JSON.stringify({ error: e.message }), {
+        status: 500, headers: corsHeaders
       });
     }
+  },
+
+  async scheduled(controller, env, ctx) {
+    console.log('Cron triggered at', new Date().toISOString(), 'cron:', controller.cron);
+    await updateResults(env);
   }
 };
+
+async function updateResults(env) {
+  let results = [];
+  let source = 'api-football';
+
+  try {
+    const res = await fetch('https://v3.football.api-sports.io/fixtures?league=1&season=2026&status=FT', {
+      method: 'GET',
+      headers: {
+        'x-apisports-key': env.API_SPORTS_KEY
+      }
+    });
+
+    if (!res.ok) {
+      throw new Error(`API-Football HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+
+    if (!data.response || !Array.isArray(data.response)) {
+      throw new Error('Unexpected API-Football response structure');
+    }
+
+    results = data.response.map(fixture => ({
+      home: fixture.teams?.home?.name || 'Unknown',
+      away: fixture.teams?.away?.name || 'Unknown',
+      homeScore: fixture.goals?.home ?? null,
+      awayScore: fixture.goals?.away ?? null,
+      status: fixture.fixture?.status?.short || 'FT'
+    }));
+
+    console.log(`API-Football: fetched ${results.length} finished matches`);
+  } catch (primaryErr) {
+    console.error('API-Football failed:', primaryErr);
+
+    // Fallback to openfootball JSON
+    try {
+      const res = await fetch('https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json');
+      if (!res.ok) {
+        throw new Error(`Fallback HTTP ${res.status}`);
+      }
+      const data = await res.json();
+
+      results = (data.matches || []).filter(m => m.score && m.score.ft && Array.isArray(m.score.ft)).map(m => ({
+        home: m.team1 || 'Unknown',
+        away: m.team2 || 'Unknown',
+        homeScore: m.score.ft[0],
+        awayScore: m.score.ft[1],
+        status: 'FT'
+      }));
+
+      source = 'openfootball';
+      console.log(`Fallback: fetched ${results.length} finished matches`);
+    } catch (fallbackErr) {
+      console.error('Fallback also failed:', fallbackErr);
+      return;
+    }
+  }
+
+  try {
+    await env.KV.put('wc_results', JSON.stringify({
+      results,
+      updatedAt: Date.now(),
+      source
+    }));
+    console.log(`Saved ${results.length} results to KV (source: ${source})`);
+  } catch (kvErr) {
+    console.error('KV write failed:', kvErr);
+  }
+}
