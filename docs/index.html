@@ -620,15 +620,25 @@ function renderMatches() {
     const isFinished = st.status === 'finished';
     const isLocked = st.status === 'locked';
     const badge = isFinished
-      ? `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-red-600 text-white">${t('match_finished')}</span>`
+      ? `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-red-600 text-white">FT</span>`
       : isLocked
       ? `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-600 text-white">${t('match_status_locked')}</span>`
       : '';
+    // Format kickoff time in ET (Eastern Time)
+    let kickoffStr = '';
+    if (m.kickoff && !isFinished) {
+      try {
+        const kDate = new Date(m.kickoff);
+        const etTime = kDate.toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit', hour12: false });
+        kickoffStr = `<span class="text-xs text-amber-300/70 font-mono">${etTime} ET</span>`;
+      } catch(e) { kickoffStr = ''; }
+    }
     return `
     <button onclick="selectMatch(${m.id})" class="w-full text-left p-4 rounded-xl bg-slate-800/50 hover:bg-slate-700 border border-slate-700 hover:border-amber-500/50 transition flex items-center justify-between group">
       <div class="flex items-center gap-3">
         <span class="text-xs font-bold text-slate-500 bg-slate-900 px-2 py-1 rounded">${m.group}</span>
         <span class="text-sm text-slate-400">${m.date}</span>
+        ${kickoffStr}
         ${badge}
       </div>
       <div class="flex items-center gap-3">
