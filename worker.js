@@ -1,7 +1,9 @@
 // Cloudflare Worker: Gemini API Proxy for MatchProphet
-// Hides API key, adds multi-language prompt building
+// Hides API key, adds multi-language prompt building, match locking, and delayed result scraping
 
 const MODEL = 'gemini-3.5-flash';
+const MATCHES_URL = 'https://matchprophet.fun/matches.json';
+const FIFA_API_URL = 'https://api.fifa.com/api/v3/calendar/matches?idSeason=285023&idStage=289273&language=en&count=100';
 
 const PROMPTS = {
   en: {
@@ -22,7 +24,7 @@ const PROMPTS = {
   de: {
     persona: `Du bist "Prophet AI", ein brutal ehrlicher, lustiger und leicht verrückter Fußballexperte, der WM 2026-Spiele vorhersagt. Deine Persönlichkeit: eine Mischung aus Gary Nevilles Wut, Roy Keanes Verachtung und einem Twitter-Shitposter. Du sprichst in kurzen, prägnanten Absätzen.`,
     instruction: `Verbrenne die Vorhersage des Nutzers in 2-3 Sätzen und gib deine eigene Vorhersage mit Begründung. Sei lustig, nutze Fußball-Memes, erwähne echte Spieler wenn relevant. Keine Wettbegriffe. Dann gib eine ikonische Punchline unter 120 Zeichen, die der Nutzer tweeten kann. Bissig aber familienfreundlich.\n\nAntworte EXAKT in diesem Format (behalte die Labels bei):\nVERDICT: [dein Roast und Vorhersage]\nQUOTE: [deine Punchline]`,
-    fallback: 'Kühne Vorhersage. Wahrscheinlich falsch.'
+    fallback: 'Kühne Vorhersage. Wahrscheinlichlich falsch.'
   },
   es: {
     persona: `Eres "Prophet AI", un experto de fútbol brutalmente honesto, divertido y ligeramente desquiciado que predice partidos del Mundial 2026. Tu personalidad: una combinación de la furia de Gary Neville, el desdén de Roy Keane y un shitposter de Twitter. Hablas en párrafos cortos y contundentes.`,
@@ -36,8 +38,43 @@ const PROMPTS = {
   }
 };
 
+let matchesCache = null;
+let matchesCacheTime = 0;
+const MATCHES_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+async function getMatches() {
+  const now = Date.now();
+  if (matchesCache && (now - matchesCacheTime) < MATCHES_CACHE_TTL) {
+    return matchesCache;
+  }
+  try {
+    const res = await fetch(MATCHES_URL);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    matchesCache = await res.json();
+    matchesCacheTime = now;
+    return matchesCache;
+  } catch (e) {
+    console.error('Failed to fetch matches.json:', e);
+    return matchesCache || [];
+  }
+}
+
+function normalizeTeam(name) {
+  return (name || '').toLowerCase().trim();
+}
+
+function findMatchInSchedule(matches, home, away) {
+  const h = normalizeTeam(home);
+  const a = normalizeTeam(away);
+  return matches.find(m => {
+    const mh = normalizeTeam(m.home);
+    const ma = normalizeTeam(m.away);
+    return (mh === h && ma === a) || (mh === a && ma === h);
+  });
+}
+
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     console.log('Worker received:', request.method, request.url);
     const url = new URL(request.url);
 
@@ -58,11 +95,13 @@ export default {
       return new Response(null, { headers: corsHeaders });
     }
 
-    // GET /api/results — return cached actual scores
+    // GET /api/results — return cached actual scores + trigger async scrape
     if (url.pathname === '/api/results' || url.pathname === '/api/results/') {
       if (request.method === 'GET') {
         try {
           const data = await env.KV.get('wc_results', { type: 'json' }) || { results: [], updatedAt: null };
+          // Trigger async scrape for stale matches without blocking response
+          ctx.waitUntil(scrapeMissingResults(env));
           return new Response(JSON.stringify(data), { headers: corsHeaders });
         } catch (e) {
           return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: corsHeaders });
@@ -124,6 +163,37 @@ export default {
       return new Response(JSON.stringify({ error: 'Missing required fields' }), {
         status: 400, headers: corsHeaders
       });
+    }
+
+    // ===== LOCK LOGIC =====
+    try {
+      const matches = await getMatches();
+      const matchData = findMatchInSchedule(matches, match.home, match.away);
+      if (matchData && matchData.kickoff) {
+        const kickoffTime = new Date(matchData.kickoff).getTime();
+        const lockTime = kickoffTime - 15 * 60 * 1000;
+        if (Date.now() >= lockTime) {
+          return new Response(JSON.stringify({ error: 'match_locked', message: '该场比赛即将开始，不再接受新的预测' }), {
+            status: 400, headers: corsHeaders
+          });
+        }
+      }
+
+      // Also reject if match already FINISHED in KV
+      const resultsData = await env.KV.get('wc_results', { type: 'json' }) || { results: [] };
+      const finished = resultsData.results.find(r =>
+        normalizeTeam(r.home) === normalizeTeam(match.home) &&
+        normalizeTeam(r.away) === normalizeTeam(match.away) &&
+        r.status === 'FINISHED'
+      );
+      if (finished) {
+        return new Response(JSON.stringify({ error: 'match_finished', message: '比赛已结束，不再接受新的预测' }), {
+          status: 400, headers: corsHeaders
+        });
+      }
+    } catch (lockErr) {
+      console.error('Lock check error:', lockErr);
+      // Don't block prediction if lock check fails
     }
 
     const p = PROMPTS[lang] || PROMPTS.en;
@@ -225,6 +295,90 @@ export default {
     await updateResults(env);
   }
 };
+
+async function scrapeMissingResults(env) {
+  try {
+    const matches = await getMatches();
+    const now = Date.now();
+    const kvData = await env.KV.get('wc_results', { type: 'json' }) || { results: [], updatedAt: null };
+
+    // Find matches whose kickoff + 2h has passed but we don't have a FINISHED result
+    const staleMatches = matches.filter(m => {
+      if (!m.kickoff) return false;
+      const cutoff = new Date(m.kickoff).getTime() + 2 * 60 * 60 * 1000;
+      if (now < cutoff) return false;
+      const haveResult = kvData.results.some(r =>
+        normalizeTeam(r.home) === normalizeTeam(m.home) &&
+        normalizeTeam(r.away) === normalizeTeam(m.away) &&
+        r.status === 'FINISHED'
+      );
+      return !haveResult;
+    });
+
+    if (staleMatches.length === 0) return;
+    console.log(`Scraping ${staleMatches.length} missing results from FIFA API`);
+
+    const res = await fetch(FIFA_API_URL);
+    if (!res.ok) {
+      console.error(`FIFA API HTTP ${res.status}`);
+      return;
+    }
+    const fifaData = await res.json();
+
+    const nameMap = {
+      'Korea Republic': 'South Korea',
+      'Türkiye': 'Turkey',
+      'IR Iran': 'Iran',
+      'Cabo Verde': 'Cape Verde',
+      'Côte d\'Ivoire': 'Ivory Coast',
+      'Congo DR': 'DR Congo',
+      'USA': 'United States',
+      'Curaçao': 'Curacao',
+    };
+
+    let updated = 0;
+    for (const m of fifaData.Results || []) {
+      const status = m.MatchStatus;
+      const homeScore = m.HomeTeamScore;
+      const awayScore = m.AwayTeamScore;
+      // MatchStatus 0 = finished, 1 = upcoming (observed pattern)
+      if (status !== 0 || homeScore === null || awayScore === null) continue;
+
+      let home = m.Home.TeamName[0].Description;
+      let away = m.Away.TeamName[0].Description;
+      home = nameMap[home] || home;
+      away = nameMap[away] || away;
+
+      // Only update if this match is in our stale list
+      const isStale = staleMatches.some(sm =>
+        normalizeTeam(sm.home) === normalizeTeam(home) &&
+        normalizeTeam(sm.away) === normalizeTeam(away)
+      );
+      if (!isStale) continue;
+
+      const idx = kvData.results.findIndex(r =>
+        normalizeTeam(r.home) === normalizeTeam(home) &&
+        normalizeTeam(r.away) === normalizeTeam(away)
+      );
+      const newResult = { home, away, homeScore, awayScore, status: 'FINISHED', matchDate: m.Date };
+      if (idx >= 0) {
+        kvData.results[idx] = newResult;
+      } else {
+        kvData.results.push(newResult);
+      }
+      updated++;
+    }
+
+    if (updated > 0) {
+      kvData.updatedAt = Date.now();
+      kvData.source = 'fifa_api';
+      await env.KV.put('wc_results', JSON.stringify(kvData));
+      console.log(`Updated ${updated} results from FIFA API`);
+    }
+  } catch (e) {
+    console.error('Scrape missing results failed:', e);
+  }
+}
 
 async function updateResults(env) {
   let results = [];
