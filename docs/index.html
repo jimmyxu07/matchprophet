@@ -553,7 +553,7 @@ function getMatchStatus(m) {
     const actual = actualResultsCache.find(r =>
       normalizeName(r.home) === normalizeName(m.home) &&
       normalizeName(r.away) === normalizeName(m.away) &&
-      r.status === 'FINISHED'
+      (r.status === 'FINISHED' || r.status === 'FT')
     );
     if (actual) return { status: 'finished', actual };
   }
@@ -633,8 +633,12 @@ function renderMatches() {
         kickoffStr = `<span class="text-xs text-amber-300/70 font-mono">${etTime} ET</span>`;
       } catch(e) { kickoffStr = ''; }
     }
+    // For finished matches, show actual score prominently
+    const actualScore = (isFinished && st.actual)
+      ? `<span class="text-lg font-black text-amber-400 tabular-nums">${st.actual.homeScore} <span class="text-slate-500">-</span> ${st.actual.awayScore}</span>`
+      : `<span class="text-slate-500 font-bold">vs</span>`;
     return `
-    <button onclick="selectMatch(${m.id})" class="w-full text-left p-4 rounded-xl bg-slate-800/50 hover:bg-slate-700 border border-slate-700 hover:border-amber-500/50 transition flex items-center justify-between group">
+    <button onclick="selectMatch(${m.id})" class="w-full text-left p-4 rounded-xl ${isFinished ? 'bg-slate-800/30 border-slate-700/60 opacity-80' : 'bg-slate-800/50 hover:bg-slate-700'} border border-slate-700 hover:border-amber-500/50 transition flex items-center justify-between group">
       <div class="flex items-center gap-3">
         <span class="text-xs font-bold text-slate-500 bg-slate-900 px-2 py-1 rounded">${m.group}</span>
         <span class="text-sm text-slate-400">${m.date}</span>
@@ -643,7 +647,7 @@ function renderMatches() {
       </div>
       <div class="flex items-center gap-3">
         <span class="flex items-center gap-1"><span class="flag text-xl">${m.homeFlag}</span><span class="font-semibold hidden sm:inline">${localizeTeam(m.home)}</span></span>
-        <span class="text-slate-500 font-bold">vs</span>
+        ${actualScore}
         <span class="flex items-center gap-1"><span class="font-semibold hidden sm:inline">${localizeTeam(m.away)}</span><span class="flag text-xl">${m.awayFlag}</span></span>
       </div>
     </button>
